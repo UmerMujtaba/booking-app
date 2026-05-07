@@ -18,6 +18,15 @@ export const translations: Record<string, Record<string, string>> = {
     signingIn: 'Signing In...',
     creatingAccount: 'Creating Account...',
     chooseRole: 'I am a...',
+    forgotPassword: 'Forgot Password?',
+    resetPassword: 'Reset Password',
+    resetPasswordDesc: 'Enter your email address to reset your password.',
+confirmPassword: 'Confirm Password',
+sendResetLink: 'Send Reset Link',
+sending: 'Sending...',
+passUpdate : 'Update Password',
+updating : 'Updating...',
+
 
     // Discovery
     discover: 'Discover',
@@ -133,6 +142,14 @@ export const translations: Record<string, Record<string, string>> = {
     signingIn: 'سائن ان ہو رہا ہے...',
     creatingAccount: 'اکاؤنٹ بنایا جا رہا ہے...',
     chooseRole: 'میں ہوں...',
+    forgotPassword: 'بھولا ہوا پاس ورڈ؟',
+    resetPassword: 'ری سیٹ پاس ورڈ',
+    resetPasswordDesc: 'اپنے پاس ورڈ کو ری سیٹ کرنے کے لیے اپنا ای میل پتہ درج کریں۔',
+    confirmPassword: 'تصدیق شدہ پاس ورڈ',
+    sendResetLink: 'ری سیٹ لنک بھیجیں',
+    sending: 'بھیج رہا ہے...',
+      passUpdate : 'پاس ورڈ اپ ڈیٹ کریں',
+updating : 'اپ ڈیٹ ہو رہا ہے...',
 
     // Discovery
     discover: 'دریافت کریں',

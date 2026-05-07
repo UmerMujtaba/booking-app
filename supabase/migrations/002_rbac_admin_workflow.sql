@@ -86,11 +86,12 @@ BEGIN
   requested_role := COALESCE(NEW.raw_user_meta_data->>'role', 'customer');
   safe_role := CASE WHEN requested_role IN ('customer', 'owner') THEN requested_role::user_role ELSE 'customer' END;
 
-  INSERT INTO public.profiles (id, full_name, role)
+  INSERT INTO public.profiles (id, full_name, role, email)
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'full_name', 'User'),
-    safe_role
+    safe_role,
+    NEW.email
   )
   ON CONFLICT (id) DO NOTHING;
   RETURN NEW;

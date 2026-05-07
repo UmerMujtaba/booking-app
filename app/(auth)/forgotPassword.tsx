@@ -1,6 +1,4 @@
 import { Feather } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -18,9 +16,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
+import { router } from "expo-router";
 
-export default function LoginScreen() {
-  const { signIn } = useAuth();
+export default function ForgotPasswordScreen() {
+  const { signIn, resetPassword } = useAuth();
   const colors = useColors();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -30,19 +29,18 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSignIn = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
+  const handlePasswordReset = async () => {
+    if (!email) {
+      Alert.alert(t("error"), t("emailRequired"));
       return;
     }
     try {
       setLoading(true);
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      await signIn(email.trim().toLowerCase(), password);
-      router.replace("/");
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Sign in failed";
-      Alert.alert("Sign In Failed", message);
+      await resetPassword(email);
+      Alert.alert(t("success"), t("resetLinkSent"));
+      router.back();
+    } catch (error: any) {
+      Alert.alert(t("error"), error.message || t("resetFailed"));
     } finally {
       setLoading(false);
     }
@@ -75,15 +73,7 @@ export default function LoginScreen() {
               { color: colors.text, fontFamily: "Inter_700Bold" },
             ]}
           >
-            {t("welcome")}
-          </Text>
-          <Text
-            style={[
-              styles.subtitle,
-              { color: colors.mutedForeground, fontFamily: "Inter_400Regular" },
-            ]}
-          >
-            Book local services with ease
+            {t("resetPassword")}
           </Text>
         </View>
 
@@ -120,60 +110,6 @@ export default function LoginScreen() {
             </View>
           </View>
 
-          <View style={styles.fieldWrap}>
-            <Text
-              style={[
-                styles.label,
-                { color: colors.text, fontFamily: "Inter_500Medium" },
-              ]}
-            >
-              {t("password")}
-            </Text>
-            <View
-              style={[
-                styles.inputWrap,
-                { backgroundColor: colors.card, borderColor: colors.border },
-              ]}
-            >
-              <Feather name="lock" size={18} color={colors.mutedForeground} />
-              <TextInput
-                style={[
-                  styles.input,
-                  { color: colors.text, fontFamily: "Inter_400Regular" },
-                ]}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="••••••••"
-                placeholderTextColor={colors.mutedForeground}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-              />
-              <Pressable onPress={() => setShowPassword((p) => !p)} hitSlop={8}>
-                <Feather
-                  name={showPassword ? "eye-off" : "eye"}
-                  size={18}
-                  color={colors.mutedForeground}
-                />
-              </Pressable>
-            </View>
-            <View style={styles.forgotPasswordFooter}>
-              <Pressable onPress={() => router.push("/forgotPassword")}>
-                <Text
-                  style={[
-                    styles.footerLink,
-                    {
-                      color: colors.primary,
-                      fontFamily: "Inter_600SemiBold",
-                      alignSelf: "flex-end",
-                    },
-                  ]}
-                >
-                  {t("forgotPassword")}
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-
           <Pressable
             style={({ pressed }) => [
               styles.signInBtn,
@@ -182,34 +118,13 @@ export default function LoginScreen() {
                 opacity: pressed || loading ? 0.85 : 1,
               },
             ]}
-            onPress={handleSignIn}
+            onPress={handlePasswordReset}
             disabled={loading}
           >
             <Text
               style={[styles.signInText, { fontFamily: "Inter_600SemiBold" }]}
             >
-              {loading ? t("signingIn") : t("signIn")}
-            </Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.footer}>
-          <Text
-            style={[
-              styles.footerText,
-              { color: colors.mutedForeground, fontFamily: "Inter_400Regular" },
-            ]}
-          >
-            {t("noAccount")}{" "}
-          </Text>
-          <Pressable onPress={() => router.push("/(auth)/register")}>
-            <Text
-              style={[
-                styles.footerLink,
-                { color: colors.primary, fontFamily: "Inter_600SemiBold" },
-              ]}
-            >
-              {t("signUp")}
+              {loading ? t("sending") : t("sendResetLink")}
             </Text>
           </Pressable>
         </View>

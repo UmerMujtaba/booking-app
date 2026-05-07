@@ -9,6 +9,7 @@ CREATE TABLE profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   role user_role NOT NULL DEFAULT 'customer',
   full_name TEXT NOT NULL,
+  email TEXT,
   phone TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );
@@ -83,11 +84,12 @@ CREATE POLICY "Customers can cancel pending appointments" ON appointments FOR UP
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, role)
+  INSERT INTO public.profiles (id, full_name, role, email)
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'full_name', 'User'),
-    COALESCE((NEW.raw_user_meta_data->>'role')::user_role, 'customer')
+    COALESCE((NEW.raw_user_meta_data->>'role')::user_role, 'customer'),
+    NEW.email
   )
   ON CONFLICT (id) DO NOTHING;
   RETURN NEW;

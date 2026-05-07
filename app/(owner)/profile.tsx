@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -9,19 +9,19 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useAuth } from "@/features/auth/AuthContext";
 import { logActivity } from "@/features/audit/logging";
+import { useAuth } from "@/features/auth/AuthContext";
 import { Business, BusinessUpdateRequest } from "@/features/booking/types";
-import { supabase } from "@/lib/supabase";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
+import { supabase } from "@/lib/supabase";
+import { styles } from "./styles";
 
 const CATEGORIES = ["Barber", "Salon", "Spa", "Nails", "Massage", "Skincare"];
 
@@ -32,7 +32,6 @@ async function fetchOwnerBusiness(ownerId: string): Promise<Business | null> {
     .eq("owner_id", ownerId)
     .single();
 
-  console.log("🚀 ~ fetchOwnerBusiness ~ 2222:", JSON.stringify(data, null, 2));
   return data as Business | null;
 }
 
@@ -48,7 +47,6 @@ async function fetchLatestUpdateRequest(
     .maybeSingle();
 
   if (error) throw error;
-  console.log("🚀 ~ fetchOwnerBusiness ~ data:", JSON.stringify(data, null, 2));
   return (data ?? null) as BusinessUpdateRequest | null;
 }
 
@@ -70,10 +68,7 @@ export default function OwnerProfileScreen() {
     queryFn: () => fetchOwnerBusiness(user!.id),
     enabled: !!user?.id,
   });
-  console.log(
-    "🚀 ~ OwnerProfileScreen ~ business:",
-    JSON.stringify(business, null, 2),
-  );
+
   const { data: latestUpdateRequest } = useQuery({
     queryKey: ["owner-business-update-request", user?.id],
     queryFn: () => fetchLatestUpdateRequest(user!.id),
@@ -203,6 +198,14 @@ export default function OwnerProfileScreen() {
                 {t("owner")}
               </Text>
             </View>
+            <Text
+              style={[
+                styles.ownerEmail,
+                { color: colors.mutedForeground, fontFamily: "Inter_400Regular" },
+              ]}
+            >
+              {profile?.email}
+            </Text>
           </View>
         </View>
 
@@ -453,77 +456,3 @@ export default function OwnerProfileScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { paddingHorizontal: 20, gap: 20 },
-  center: { flex: 1, alignItems: "center", justifyContent: "center" },
-  title: { fontSize: 26 },
-  ownerCard: { flexDirection: "row", alignItems: "center", gap: 14 },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  initials: { color: "#fff", fontSize: 22 },
-  ownerName: { fontSize: 18 },
-  roleBadge: {
-    alignSelf: "flex-start",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    marginTop: 4,
-  },
-  roleText: { fontSize: 12 },
-  card: { borderRadius: 16, borderWidth: 1, padding: 18, gap: 16 },
-  cardTitle: { fontSize: 17 },
-  field: { gap: 8 },
-  label: { fontSize: 14 },
-  inputWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    gap: 10,
-  },
-  input: { flex: 1, fontSize: 15 },
-  catRow: { gap: 8 },
-  catChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  catText: { fontSize: 14 },
-  textAreaWrap: { borderWidth: 1, borderRadius: 10, padding: 12 },
-  textArea: { fontSize: 15, minHeight: 80, textAlignVertical: "top" },
-  saveBtn: {
-    paddingVertical: 15,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 4,
-  },
-  saveBtnText: { color: "#fff", fontSize: 16 },
-  langRow: { flexDirection: "row", gap: 10 },
-  langBtn: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: "center",
-    borderRadius: 10,
-    borderWidth: 1,
-  },
-  langText: { fontSize: 15 },
-  signOutBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    paddingVertical: 15,
-    borderRadius: 14,
-    borderWidth: 1,
-  },
-  signOutText: { fontSize: 16 },
-});

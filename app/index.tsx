@@ -1,17 +1,16 @@
 import { Feather } from "@expo/vector-icons";
 import { Redirect, router } from "expo-router";
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-
+import { StyleSheet, Pressable, Text, View } from "react-native";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useColors } from "@/hooks/useColors";
 
 export default function Index() {
-  const { user, profile, loading, signOut } = useAuth();
+  const { user, profile, loading, isRecovering, signOut } = useAuth();
   const colors = useColors();
 
-  if (loading) return <LoadingScreen />;
+  if (loading || isRecovering) return <LoadingScreen />;
   if (!user) return <Redirect href="/(auth)/login" />;
 
   // Authenticated but no profile — migration hasn't been run yet
