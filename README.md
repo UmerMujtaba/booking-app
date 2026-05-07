@@ -10,6 +10,7 @@ A React Native booking application built with Expo and Supabase.
 ## Installation
 
 1. Install dependencies:
+
 ```bash
 pnpm install
 ```
