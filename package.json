@@ -7,7 +7,9 @@
     "dev": "expo start",
     "build": "node scripts/build.js",
     "serve": "node server/serve.js",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "android-build": "eas build -p android --profile preview --clear-cache",
+    "ios-build": "eas build -p ios --profile preview --clear-cache"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
