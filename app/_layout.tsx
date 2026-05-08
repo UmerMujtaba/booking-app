@@ -8,6 +8,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import * as Notifications from "expo-notifications";
 import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
@@ -18,6 +19,14 @@ import { AuthProvider } from "@/features/auth/AuthContext";
 import { LanguageProvider } from "@/features/i18n/LanguageContext";
 
 SplashScreen.preventAutoHideAsync();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {

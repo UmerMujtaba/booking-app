@@ -5,6 +5,10 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { Alert } from "react-native";
 
 import { supabase } from "@/lib/supabase";
+import {
+  registerForPushNotificationsAsync,
+  savePushToken,
+} from "@/lib/notifications";
 
 import { Profile, UserRole } from "./types";
 type SignUpRole = Exclude<UserRole, "admin">;
@@ -150,6 +154,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!found) {
           found = await ensureProfile(s.user.id);
         }
+
+        // Register for push notifications
+        registerForPushNotificationsAsync().then((token) => {
+          if (token && s.user) {
+            savePushToken(s.user.id, token);
+          }
+        });
       } else if (event === "SIGNED_OUT") {
         setProfile(null);
         setNeedsEmailConfirm(false);
@@ -255,17 +266,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // session exists → email confirmation is off, trigger auto-creates profile
     // but we also upsert here as a safety net in case trigger is slow
     if (data.user) {
-      await supabase
-        .from("profiles")
-        .upsert(
-          {
-            id: data.user.id,
-            full_name: fullName,
-            role,
-            email: data.user.email,
-          },
-          { onConflict: "id", ignoreDuplicates: true },
-        );
+      await supabase.from("profiles").upsert(
+        {
+          id: data.user.id,
+          full_name: fullName,
+          role,
+          email: data.user.email,
+        },
+        { onConflict: "id", ignoreDuplicates: true },
+      );
     }
   };
 

@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
@@ -26,6 +27,7 @@ export default function LoginScreen() {
   const insets = useSafeAreaInsets();
 
   const [email, setEmail] = useState("");
+  // const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -47,6 +49,27 @@ export default function LoginScreen() {
       setLoading(false);
     }
   };
+
+  // const handlePhoneLogin = async () => {
+  //   try {
+  //     setLoading(true);
+
+  //     const { data, error } = await supabase.auth.signInWithOtp({
+  //       phone: "+923054034026",
+  //     });
+
+  //     if (error) {
+  //       console.log(error.message);
+  //       return;
+  //     }
+
+  //     console.log("OTP sent successfully");
+  //   } catch (err) {
+  //     console.log(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <KeyboardAvoidingView
@@ -174,6 +197,22 @@ export default function LoginScreen() {
             </View>
           </View>
 
+          {/* <TextInput
+            placeholder="+923001234567"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+            autoCapitalize="none"
+            style={[
+              styles.input,
+              {
+                borderColor: colors.border,
+                color: colors.foreground,
+                fontFamily: "Inter_400Regular",
+              },
+            ]}
+            placeholderTextColor={colors.mutedForeground}
+          /> */}
           <Pressable
             style={({ pressed }) => [
               styles.signInBtn,
@@ -191,6 +230,23 @@ export default function LoginScreen() {
               {loading ? t("signingIn") : t("signIn")}
             </Text>
           </Pressable>
+          {/* <Pressable
+            style={({ pressed }) => [
+              styles.signInBtn,
+              {
+                backgroundColor: colors.primary,
+                opacity: pressed || loading ? 0.85 : 1,
+              },
+            ]}
+            onPress={handlePhoneLogin}
+            disabled={loading}
+          >
+            <Text
+              style={[styles.signInText, { fontFamily: "Inter_600SemiBold" }]}
+            >
+              {loading ? "Sending OTP..." : "Send OTP"}
+            </Text>
+          </Pressable> */}
         </View>
 
         <View style={styles.footer}>
