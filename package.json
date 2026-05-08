@@ -59,6 +59,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",
     "expo-device": "~8.0.10",
+    "expo-file-system": "^55.0.19",
     "expo-notifications": "~0.32.17",
     "i18next": "^26.0.8",
     "react-i18next": "^17.0.6",

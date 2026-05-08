@@ -7,6 +7,11 @@ export interface Business {
   longitude?: number;
   bio?: string;
   image_url?: string;
+  address?: string;
+  cnic_front_image?: string;
+  cnic_back_image?: string;
+  opening_time?: string;
+  closing_time?: string;
   approved?: boolean;
   approved_at?: string;
   approved_by?: string;
@@ -45,7 +50,12 @@ export interface BusinessUpdateRequest {
   proposed_name: string;
   proposed_category: string;
   proposed_bio?: string;
-  status: 'pending' | 'approved' | 'rejected';
+  proposed_address?: string;
+  proposed_cnic_front_image?: string;
+  proposed_cnic_back_image?: string;
+  proposed_opening_time?: string;
+  proposed_closing_time?: string;
+  status: 'pending' | 'approved' | 'rejected' | 'acknowledged';
   reviewed_by?: string;
   reviewed_at?: string;
   rejection_reason?: string;

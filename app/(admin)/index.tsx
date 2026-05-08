@@ -5,13 +5,16 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Image } from "expo-image";
 import { styles } from "./styles";
 import { logActivity } from "@/features/audit/logging";
 import { useAuth } from "@/features/auth/AuthContext";
@@ -87,25 +90,30 @@ export default function AdminPanelScreen() {
   const [businessName, setBusinessName] = useState("");
   const [businessCategory, setBusinessCategory] = useState("Barber");
   const [businessBio, setBusinessBio] = useState("");
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [activeRejectionId, setActiveRejectionId] = useState<string | null>(
+    null,
+  );
+  const [rejectionReasonText, setRejectionReasonText] = useState("");
 
   const { data: businesses = [], isLoading: loadingBusinesses } = useQuery({
     queryKey: ["admin-businesses"],
     queryFn: fetchBusinessesForAdmin,
   });
-  console.log(
-    "🚀 ~ AdminPanelScreen ~ businesses:",
-    JSON.stringify(businesses, null, 2),
-  );
+  // console.log(
+  //   "🚀 ~ AdminPanelScreen ~ businesses:",
+  //   JSON.stringify(businesses, null, 2),
+  // );
 
   const { data: requests = [], isLoading: loadingRequests } = useQuery({
     queryKey: ["admin-business-update-requests"],
     queryFn: fetchPendingRequests,
   });
   // console.log("🚀 ~ AdminPanelScreen ~ requests:", requests);
-  console.log(
-    "🚀 ~ AdminPanelScreen ~ requests:",
-    JSON.stringify(requests, null, 2),
-  );
+  // console.log(
+  //   "🚀 ~ AdminPanelScreen ~ requests:",
+  //   JSON.stringify(requests, null, 2),
+  // );
 
   const { data: logs = [] } = useQuery({
     queryKey: ["admin-activity-logs"],
@@ -192,38 +200,64 @@ export default function AdminPanelScreen() {
     mutationFn: async ({
       req,
       approve,
+      reason,
     }: {
       req: BusinessRequestWithBusiness;
       approve: boolean;
+      reason?: string;
     }) => {
-      let createdBusinessId: string | null = null;
-
-      // 🟢 APPROVE → CREATE BUSINESS
+      // 🟢 APPROVE → UPDATE BUSINESS OR CREATE
       if (approve) {
-        const { data: newBusiness, error: createError } = await supabase
-          .from("businesses")
-          .insert({
-            name: req.proposed_name,
-            category: req.proposed_category,
-            bio: req.proposed_bio,
-            owner_id: req.requested_by,
-          })
-          .select()
-          .single();
+        if (req.business_id) {
+          // Update existing business
+          const { error: updateBizError } = await supabase
+            .from("businesses")
+            .update({
+              name: req.proposed_name,
+              category: req.proposed_category,
+              bio: req.proposed_bio,
+              address: req.proposed_address,
+              cnic_front_image: req.proposed_cnic_front_image,
+              cnic_back_image: req.proposed_cnic_back_image,
+              opening_time: req.proposed_opening_time,
+              closing_time: req.proposed_closing_time,
+              approved: true, // Ensure it's approved if it was an update to a pending one
+            })
+            .eq("id", req.business_id);
+          if (updateBizError) throw updateBizError;
+        } else {
+          // Create new business (if business_id is null)
+          const { data: newBusiness, error: createError } = await supabase
+            .from("businesses")
+            .insert({
+              name: req.proposed_name,
+              category: req.proposed_category,
+              bio: req.proposed_bio,
+              address: req.proposed_address,
+              cnic_front_image: req.proposed_cnic_front_image,
+              cnic_back_image: req.proposed_cnic_back_image,
+              opening_time: req.proposed_opening_time,
+              closing_time: req.proposed_closing_time,
+              owner_id: req.requested_by,
+              approved: true,
+              approved_at: new Date().toISOString(),
+              approved_by: profile?.id,
+            })
+            .select()
+            .single();
 
-        if (createError) throw createError;
-
-        createdBusinessId = newBusiness.id;
+          if (createError) throw createError;
+        }
       }
 
-      // 🔵 UPDATE REQUEST STATUS (always runs)
+      // 🔵 UPDATE REQUEST STATUS
       const { error: updateError } = await supabase
         .from("business_update_requests")
         .update({
           status: approve ? "approved" : "rejected",
           reviewed_by: profile?.id,
           reviewed_at: new Date().toISOString(),
-          business_id: createdBusinessId, // optional link after creation
+          rejection_reason: approve ? null : reason,
         })
         .eq("id", req.id);
 
@@ -236,9 +270,7 @@ export default function AdminPanelScreen() {
           : "business_request_rejected",
         entityType: "business_request",
         entityId: req.id,
-        metadata: {
-          business_id: createdBusinessId,
-        },
+        metadata: { reason: approve ? null : reason },
       });
     },
 
@@ -420,29 +452,103 @@ export default function AdminPanelScreen() {
               </Text>
             }
             renderItem={({ item }) => (
-              <View style={[styles.row, { borderColor: colors.border }]}>
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={[
-                      styles.rowTitle,
-                      { color: colors.text, fontFamily: "Inter_600SemiBold" },
-                    ]}
-                  >
-                    {item.name}
-                  </Text>
-                  <Text style={{ color: colors.mutedForeground }}>
-                    {item.owner?.full_name ?? "Unknown owner"}
-                  </Text>
-                </View>
-                <Pressable
-                  style={[
-                    styles.actionBtn,
-                    { backgroundColor: colors.primary },
-                  ]}
-                  onPress={() => approveBusiness(item.id)}
+              <View
+                style={[
+                  styles.row,
+                  {
+                    borderColor: colors.border,
+                    flexDirection: "column",
+                    alignItems: "stretch",
+                  },
+                ]}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 10,
+                  }}
                 >
-                  <Text style={styles.actionText}>Approve</Text>
-                </Pressable>
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={[
+                        styles.rowTitle,
+                        { color: colors.text, fontFamily: "Inter_600SemiBold" },
+                      ]}
+                    >
+                      {item.name}
+                    </Text>
+                    <Text style={{ color: colors.mutedForeground }}>
+                      {item.owner?.full_name ?? "Unknown owner"}
+                    </Text>
+                  </View>
+                  <Pressable
+                    style={[
+                      styles.actionBtn,
+                      { backgroundColor: colors.primary },
+                    ]}
+                    onPress={() => approveBusiness(item.id)}
+                  >
+                    <Text style={styles.actionText}>Approve</Text>
+                  </Pressable>
+                </View>
+
+                <View style={styles.detailBox}>
+                  <Text style={[styles.detailLabel, { color: colors.text }]}>
+                    Address
+                  </Text>
+                  <Text style={[styles.detailText, { color: colors.text }]}>
+                    {item.address || "N/A"}
+                  </Text>
+
+                  <View style={{ flexDirection: "row", gap: 20 }}>
+                    <View>
+                      <Text
+                        style={[styles.detailLabel, { color: colors.text }]}
+                      >
+                        Timing
+                      </Text>
+                      <Text style={[styles.detailText, { color: colors.text }]}>
+                        {item.opening_time?.slice(0, 5)} -{" "}
+                        {item.closing_time?.slice(0, 5)}
+                      </Text>
+                    </View>
+                    <View>
+                      <Text
+                        style={[styles.detailLabel, { color: colors.text }]}
+                      >
+                        Category
+                      </Text>
+                      <Text style={[styles.detailText, { color: colors.text }]}>
+                        {item.category}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Text style={[styles.detailLabel, { color: colors.text }]}>
+                    CNIC Front & Back
+                  </Text>
+                  <View style={styles.cnicRow}>
+                    <Pressable
+                      onPress={() => setPreviewImage(item.cnic_front_image)}
+                    >
+                      <Image
+                        source={{ uri: item.cnic_front_image }}
+                        style={styles.cnicImage}
+                        contentFit="cover"
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => setPreviewImage(item.cnic_back_image)}
+                    >
+                      <Image
+                        source={{ uri: item.cnic_back_image }}
+                        style={styles.cnicImage}
+                        contentFit="cover"
+                      />
+                    </Pressable>
+                  </View>
+                </View>
               </View>
             )}
           />
@@ -476,36 +582,173 @@ export default function AdminPanelScreen() {
               </Text>
             }
             renderItem={({ item }) => (
-              <View style={[styles.row, { borderColor: colors.border }]}>
-                <View style={{ flex: 1 }}>
-                  <Text
-                    style={[
-                      styles.rowTitle,
-                      { color: colors.text, fontFamily: "Inter_600SemiBold" },
-                    ]}
-                  >
-                    {item.business?.name ?? "Business"}
-                  </Text>
-                  <Text style={{ color: colors.mutedForeground }}>
-                    Requested name: {item.proposed_name}
-                  </Text>
+              <View
+                style={[
+                  styles.row,
+                  {
+                    borderColor: colors.border,
+                    flexDirection: "column",
+                    alignItems: "stretch",
+                  },
+                ]}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 10,
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={[
+                        styles.rowTitle,
+                        { color: colors.text, fontFamily: "Inter_600SemiBold" },
+                      ]}
+                    >
+                      {item.business?.name ?? "Business"}
+                    </Text>
+                    <Text style={{ color: colors.mutedForeground }}>
+                      Proposed name: {item.proposed_name}
+                    </Text>
+                  </View>
+                  <View style={styles.inlineActions}>
+                    {activeRejectionId === item.id ? (
+                      <Pressable
+                        style={[
+                          styles.smallBtn,
+                          { borderColor: colors.border },
+                        ]}
+                        onPress={() => setActiveRejectionId(null)}
+                      >
+                        <Text style={{ color: colors.text }}>Cancel</Text>
+                      </Pressable>
+                    ) : (
+                      <Pressable
+                        style={[
+                          styles.smallBtn,
+                          { borderColor: colors.border },
+                        ]}
+                        onPress={() => {
+                          setActiveRejectionId(item.id);
+                          setRejectionReasonText("");
+                        }}
+                      >
+                        <Text style={{ color: colors.text }}>Reject</Text>
+                      </Pressable>
+                    )}
+                    <Pressable
+                      style={[
+                        styles.smallBtn,
+                        { backgroundColor: colors.primary },
+                      ]}
+                      onPress={() => {
+                        if (activeRejectionId === item.id) {
+                          if (!rejectionReasonText.trim()) {
+                            return Alert.alert(
+                              "Required",
+                              "Please provide a reason for rejection",
+                            );
+                          }
+                          reviewRequest({
+                            req: item,
+                            approve: false,
+                            reason: rejectionReasonText.trim(),
+                          });
+                          setActiveRejectionId(null);
+                        } else {
+                          reviewRequest({ req: item, approve: true });
+                        }
+                      }}
+                    >
+                      <Text style={styles.actionText}>
+                        {activeRejectionId === item.id
+                          ? "Confirm Reject"
+                          : "Approve"}
+                      </Text>
+                    </Pressable>
+                  </View>
                 </View>
-                <View style={styles.inlineActions}>
-                  <Pressable
-                    style={[styles.smallBtn, { borderColor: colors.border }]}
-                    onPress={() => reviewRequest({ req: item, approve: false })}
-                  >
-                    <Text style={{ color: colors.text }}>Reject</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[
-                      styles.smallBtn,
-                      { backgroundColor: colors.primary },
-                    ]}
-                    onPress={() => reviewRequest({ req: item, approve: true })}
-                  >
-                    <Text style={styles.actionText}>Approve</Text>
-                  </Pressable>
+
+                {activeRejectionId === item.id && (
+                  <View style={{ marginTop: 10 }}>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        {
+                          borderColor: colors.destructive,
+                          color: colors.text,
+                          backgroundColor: colors.background,
+                        },
+                      ]}
+                      value={rejectionReasonText}
+                      onChangeText={setRejectionReasonText}
+                      placeholder="Reason for rejection (e.g. Invalid CNIC images)"
+                      placeholderTextColor={colors.mutedForeground}
+                      autoFocus
+                    />
+                  </View>
+                )}
+
+                <View style={styles.detailBox}>
+                  <Text style={[styles.detailLabel, { color: colors.text }]}>
+                    Proposed Address
+                  </Text>
+                  <Text style={[styles.detailText, { color: colors.text }]}>
+                    {item.proposed_address || "N/A"}
+                  </Text>
+
+                  <View style={{ flexDirection: "row", gap: 20 }}>
+                    <View>
+                      <Text
+                        style={[styles.detailLabel, { color: colors.text }]}
+                      >
+                        Proposed Timing
+                      </Text>
+                      <Text style={[styles.detailText, { color: colors.text }]}>
+                        {item.proposed_opening_time?.slice(0, 5)} -{" "}
+                        {item.proposed_closing_time?.slice(0, 5)}
+                      </Text>
+                    </View>
+                    <View>
+                      <Text
+                        style={[styles.detailLabel, { color: colors.text }]}
+                      >
+                        Proposed Category
+                      </Text>
+                      <Text style={[styles.detailText, { color: colors.text }]}>
+                        {item.proposed_category}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Text style={[styles.detailLabel, { color: colors.text }]}>
+                    Proposed CNIC Front & Back
+                  </Text>
+                  <View style={styles.cnicRow}>
+                    <Pressable
+                      onPress={() =>
+                        setPreviewImage(item.proposed_cnic_front_image)
+                      }
+                    >
+                      <Image
+                        source={{ uri: item.proposed_cnic_front_image }}
+                        style={styles.cnicImage}
+                        contentFit="cover"
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() =>
+                        setPreviewImage(item.proposed_cnic_back_image)
+                      }
+                    >
+                      <Image
+                        source={{ uri: item.proposed_cnic_back_image }}
+                        style={styles.cnicImage}
+                        contentFit="cover"
+                      />
+                    </Pressable>
+                  </View>
                 </View>
               </View>
             )}
@@ -564,6 +807,29 @@ export default function AdminPanelScreen() {
           {t("signOut")}
         </Text>
       </Pressable>
+
+      <Modal
+        visible={!!previewImage}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setPreviewImage(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <Pressable
+            style={styles.closeBtn}
+            onPress={() => setPreviewImage(null)}
+          >
+            <Feather name="x" size={30} color="#fff" />
+          </Pressable>
+          {previewImage && (
+            <Image
+              source={{ uri: previewImage }}
+              style={styles.fullImage}
+              contentFit="contain"
+            />
+          )}
+        </View>
+      </Modal>
     </ScrollView>
   );
 }

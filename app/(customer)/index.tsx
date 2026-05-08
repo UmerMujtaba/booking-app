@@ -52,7 +52,7 @@ export default function DiscoverScreen() {
   const colors = useColors();
   const { t } = useTranslation();
   const { profile } = useAuth();
-  console.log("🚀 ~ DiscoverScreen ~ profile:", profile);
+  // console.log("🚀 ~ DiscoverScreen ~ profile:", profile);
   const insets = useSafeAreaInsets();
 
   const [selectedCategory, setSelectedCategory] = useState("All");

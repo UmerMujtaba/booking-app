@@ -57,5 +57,24 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
   },
   logRow: { flexDirection: "row", gap: 8, alignItems: "center" },
+  detailBox: { marginTop: 8, gap: 4, padding: 8, borderRadius: 8, backgroundColor: 'rgba(0,0,0,0.02)' },
+  detailLabel: { fontSize: 12, opacity: 0.6 },
+  detailText: { fontSize: 14, marginBottom: 4 },
+  cnicRow: { flexDirection: 'row', gap: 8, marginTop: 4 },
+  cnicImage: { width: 100, height: 60, borderRadius: 4 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullImage: { width: '90%', height: '70%' },
+  closeBtn: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    padding: 10,
+    zIndex: 10,
+  },
 });
   

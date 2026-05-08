@@ -18,7 +18,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 export default function CustomerProfileScreen() {
   const { profile, signOut } = useAuth();
-  console.log("🚀 ~ afsaksmfkmakfmksamf ~ profile:", profile);
+  // console.log("🚀 ~ afsaksmfkmakfmksamf ~ profile:", profile);
 
   const colors = useColors();
   const { t, language, setLanguage } = useTranslation();

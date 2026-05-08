@@ -170,7 +170,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     const handleDeepLink = async (url: string) => {
-      console.log("Global deep link received:", url);
+      // console.log("Global deep link received:", url);
       const parsed = Linking.parse(url);
 
       // Extract fragment manually to avoid TypeScript errors and ensure we get the tokens
