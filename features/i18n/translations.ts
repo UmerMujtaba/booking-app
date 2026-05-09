@@ -30,9 +30,9 @@ updating : 'Updating...',
 
     // Discovery
     discover: 'Discover',
-    searchPlaceholder: 'Search businesses...',
+    searchPlaceholder: 'Search',
     allCategories: 'All',
-    nearbyBusinesses: 'Nearby Businesses',
+    businesses: 'Businesses',
     noBusinesses: 'No businesses found',
     noBusinessesDesc: 'Try a different category or check back later',
 

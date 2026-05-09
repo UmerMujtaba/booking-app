@@ -21,6 +21,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 14,
     borderWidth: 1,
+    marginTop:14,
+    marginHorizontal: 16,
   },
   signOutText: { fontSize: 16 },
   sectionTitle: { fontSize: 17 },
