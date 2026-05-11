@@ -581,177 +581,186 @@ export default function AdminPanelScreen() {
                 No pending update requests.
               </Text>
             }
-            renderItem={({ item }) => (
-              <View
-                style={[
-                  styles.row,
-                  {
-                    borderColor: colors.border,
-                    flexDirection: "column",
-                    alignItems: "stretch",
-                  },
-                ]}
-              >
+            renderItem={({ item }) => {
+              return (
                 <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 10,
-                  }}
+                  style={[
+                    styles.row,
+                    {
+                      borderColor: colors.border,
+                      flexDirection: "column",
+                      alignItems: "stretch",
+                    },
+                  ]}
                 >
-                  <View style={{ flex: 1 }}>
-                    <Text
-                      style={[
-                        styles.rowTitle,
-                        { color: colors.text, fontFamily: "Inter_600SemiBold" },
-                      ]}
-                    >
-                      {item.business?.name ?? "Business"}
-                    </Text>
-                    <Text style={{ color: colors.mutedForeground }}>
-                      Proposed name: {item.proposed_name}
-                    </Text>
-                  </View>
-                  <View style={styles.inlineActions}>
-                    {activeRejectionId === item.id ? (
-                      <Pressable
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 10,
+                    }}
+                  >
+                    <View style={{ flex: 1 }}>
+                      <Text
                         style={[
-                          styles.smallBtn,
-                          { borderColor: colors.border },
+                          styles.rowTitle,
+                          {
+                            color: colors.text,
+                            fontFamily: "Inter_600SemiBold",
+                          },
                         ]}
-                        onPress={() => setActiveRejectionId(null)}
                       >
-                        <Text style={{ color: colors.text }}>Cancel</Text>
-                      </Pressable>
-                    ) : (
+                        {item.business?.name ?? "Business"}
+                      </Text>
+                      <Text style={{ color: colors.mutedForeground }}>
+                        Proposed name: {item.proposed_name}
+                      </Text>
+                    </View>
+                    <View style={styles.inlineActions}>
+                      {activeRejectionId === item.id ? (
+                        <Pressable
+                          style={[
+                            styles.smallBtn,
+                            { borderColor: colors.border },
+                          ]}
+                          onPress={() => setActiveRejectionId(null)}
+                        >
+                          <Text style={{ color: colors.text }}>Cancel</Text>
+                        </Pressable>
+                      ) : (
+                        <Pressable
+                          style={[
+                            styles.smallBtn,
+                            { borderColor: colors.border },
+                          ]}
+                          onPress={() => {
+                            setActiveRejectionId(item.id);
+                            setRejectionReasonText("");
+                          }}
+                        >
+                          <Text style={{ color: colors.text }}>Reject</Text>
+                        </Pressable>
+                      )}
                       <Pressable
                         style={[
                           styles.smallBtn,
-                          { borderColor: colors.border },
+                          { backgroundColor: colors.primary },
                         ]}
                         onPress={() => {
-                          setActiveRejectionId(item.id);
-                          setRejectionReasonText("");
+                          if (activeRejectionId === item.id) {
+                            if (!rejectionReasonText.trim()) {
+                              return Alert.alert(
+                                "Required",
+                                "Please provide a reason for rejection",
+                              );
+                            }
+                            reviewRequest({
+                              req: item,
+                              approve: false,
+                              reason: rejectionReasonText.trim(),
+                            });
+                            setActiveRejectionId(null);
+                          } else {
+                            reviewRequest({ req: item, approve: true });
+                          }
                         }}
                       >
-                        <Text style={{ color: colors.text }}>Reject</Text>
+                        <Text style={styles.actionText}>
+                          {activeRejectionId === item.id
+                            ? "Confirm Reject"
+                            : "Approve"}
+                        </Text>
                       </Pressable>
-                    )}
-                    <Pressable
-                      style={[
-                        styles.smallBtn,
-                        { backgroundColor: colors.primary },
-                      ]}
-                      onPress={() => {
-                        if (activeRejectionId === item.id) {
-                          if (!rejectionReasonText.trim()) {
-                            return Alert.alert(
-                              "Required",
-                              "Please provide a reason for rejection",
-                            );
-                          }
-                          reviewRequest({
-                            req: item,
-                            approve: false,
-                            reason: rejectionReasonText.trim(),
-                          });
-                          setActiveRejectionId(null);
-                        } else {
-                          reviewRequest({ req: item, approve: true });
+                    </View>
+                  </View>
+
+                  {activeRejectionId === item.id && (
+                    <View style={{ marginTop: 10 }}>
+                      <TextInput
+                        style={[
+                          styles.input,
+                          {
+                            borderColor: colors.destructive,
+                            color: colors.text,
+                            backgroundColor: colors.background,
+                          },
+                        ]}
+                        value={rejectionReasonText}
+                        onChangeText={setRejectionReasonText}
+                        placeholder="Reason for rejection (e.g. Invalid CNIC images)"
+                        placeholderTextColor={colors.mutedForeground}
+                        autoFocus
+                      />
+                    </View>
+                  )}
+
+                  <View style={styles.detailBox}>
+                    <Text style={[styles.detailLabel, { color: colors.text }]}>
+                      Proposed Address
+                    </Text>
+                    <Text style={[styles.detailText, { color: colors.text }]}>
+                      {item.proposed_address || "N/A"}
+                    </Text>
+
+                    <View style={{ flexDirection: "row", gap: 20 }}>
+                      <View>
+                        <Text
+                          style={[styles.detailLabel, { color: colors.text }]}
+                        >
+                          Proposed Timing
+                        </Text>
+                        <Text
+                          style={[styles.detailText, { color: colors.text }]}
+                        >
+                          {item.proposed_opening_time?.slice(0, 5)} -{" "}
+                          {item.proposed_closing_time?.slice(0, 5)}
+                        </Text>
+                      </View>
+                      <View>
+                        <Text
+                          style={[styles.detailLabel, { color: colors.text }]}
+                        >
+                          Proposed Category
+                        </Text>
+                        <Text
+                          style={[styles.detailText, { color: colors.text }]}
+                        >
+                          {item.proposed_category}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <Text style={[styles.detailLabel, { color: colors.text }]}>
+                      Proposed CNIC Front & Back
+                    </Text>
+                    <View style={styles.cnicRow}>
+                      <Pressable
+                        onPress={() =>
+                          setPreviewImage(item.proposed_cnic_front_image)
                         }
-                      }}
-                    >
-                      <Text style={styles.actionText}>
-                        {activeRejectionId === item.id
-                          ? "Confirm Reject"
-                          : "Approve"}
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
-
-                {activeRejectionId === item.id && (
-                  <View style={{ marginTop: 10 }}>
-                    <TextInput
-                      style={[
-                        styles.input,
-                        {
-                          borderColor: colors.destructive,
-                          color: colors.text,
-                          backgroundColor: colors.background,
-                        },
-                      ]}
-                      value={rejectionReasonText}
-                      onChangeText={setRejectionReasonText}
-                      placeholder="Reason for rejection (e.g. Invalid CNIC images)"
-                      placeholderTextColor={colors.mutedForeground}
-                      autoFocus
-                    />
-                  </View>
-                )}
-
-                <View style={styles.detailBox}>
-                  <Text style={[styles.detailLabel, { color: colors.text }]}>
-                    Proposed Address
-                  </Text>
-                  <Text style={[styles.detailText, { color: colors.text }]}>
-                    {item.proposed_address || "N/A"}
-                  </Text>
-
-                  <View style={{ flexDirection: "row", gap: 20 }}>
-                    <View>
-                      <Text
-                        style={[styles.detailLabel, { color: colors.text }]}
                       >
-                        Proposed Timing
-                      </Text>
-                      <Text style={[styles.detailText, { color: colors.text }]}>
-                        {item.proposed_opening_time?.slice(0, 5)} -{" "}
-                        {item.proposed_closing_time?.slice(0, 5)}
-                      </Text>
-                    </View>
-                    <View>
-                      <Text
-                        style={[styles.detailLabel, { color: colors.text }]}
+                        <Image
+                          source={{ uri: item.proposed_cnic_front_image }}
+                          style={styles.cnicImage}
+                          contentFit="cover"
+                        />
+                      </Pressable>
+                      <Pressable
+                        onPress={() =>
+                          setPreviewImage(item.proposed_cnic_back_image)
+                        }
                       >
-                        Proposed Category
-                      </Text>
-                      <Text style={[styles.detailText, { color: colors.text }]}>
-                        {item.proposed_category}
-                      </Text>
+                        <Image
+                          source={{ uri: item.proposed_cnic_back_image }}
+                          style={styles.cnicImage}
+                          contentFit="cover"
+                        />
+                      </Pressable>
                     </View>
                   </View>
-
-                  <Text style={[styles.detailLabel, { color: colors.text }]}>
-                    Proposed CNIC Front & Back
-                  </Text>
-                  <View style={styles.cnicRow}>
-                    <Pressable
-                      onPress={() =>
-                        setPreviewImage(item.proposed_cnic_front_image)
-                      }
-                    >
-                      <Image
-                        source={{ uri: item.proposed_cnic_front_image }}
-                        style={styles.cnicImage}
-                        contentFit="cover"
-                      />
-                    </Pressable>
-                    <Pressable
-                      onPress={() =>
-                        setPreviewImage(item.proposed_cnic_back_image)
-                      }
-                    >
-                      <Image
-                        source={{ uri: item.proposed_cnic_back_image }}
-                        style={styles.cnicImage}
-                        contentFit="cover"
-                      />
-                    </Pressable>
-                  </View>
                 </View>
-              </View>
-            )}
+              );
+            }}
           />
         )}
       </View>

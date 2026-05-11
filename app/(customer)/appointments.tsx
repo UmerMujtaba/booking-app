@@ -19,6 +19,7 @@ import { Appointment } from '@/features/booking/types';
 import { supabase } from '@/lib/supabase';
 import { useColors } from '@/hooks/useColors';
 import { useTranslation } from '@/hooks/useTranslation';
+import { rs, normalize } from '@/lib/responsive';
 
 async function fetchMyAppointments(userId: string): Promise<Appointment[]> {
   const { data, error } = await supabase
@@ -69,7 +70,7 @@ export default function AppointmentsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { paddingTop: topPad + 12, borderBottomColor: colors.border }]}>
+      <View style={[styles.header, { paddingTop: topPad + rs(12), borderBottomColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.text, fontFamily: 'Inter_700Bold' }]}>
           {t('myAppointments')}
         </Text>
@@ -77,7 +78,7 @@ export default function AppointmentsScreen() {
           {(['upcoming', 'past'] as const).map((tabKey) => (
             <Pressable
               key={tabKey}
-              style={[styles.tabBtn, tab === tabKey && { backgroundColor: colors.card, borderRadius: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 2, elevation: 2 }]}
+              style={[styles.tabBtn, tab === tabKey && { backgroundColor: colors.card, borderRadius: rs(8), shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 2, elevation: 2 }]}
               onPress={() => setTab(tabKey)}
             >
               <Text
@@ -125,7 +126,7 @@ export default function AppointmentsScreen() {
           )}
           ListEmptyComponent={
             <View style={styles.center}>
-              <Feather name="calendar" size={40} color={colors.mutedForeground} />
+              <Feather name="calendar" size={rs(40)} color={colors.mutedForeground} />
               <Text style={[styles.emptyTitle, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
                 {t('noAppointments')}
               </Text>
@@ -142,22 +143,23 @@ export default function AppointmentsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { paddingHorizontal: 20, paddingBottom: 12, borderBottomWidth: 1, gap: 14 },
-  title: { fontSize: 26 },
+  header: { paddingHorizontal: rs(20), paddingBottom: rs(12), borderBottomWidth: 1, gap: rs(14) },
+  title: { fontSize: normalize(26) },
   tabs: {
     flexDirection: 'row',
-    borderRadius: 10,
-    padding: 3,
+    borderRadius: rs(10),
+    padding: rs(3),
   },
   tabBtn: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: rs(8),
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: rs(8),
   },
-  tabText: { fontSize: 14 },
-  list: { padding: 16, paddingBottom: 100, gap: 0 },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 12, marginTop: 40 },
-  emptyTitle: { fontSize: 20 },
-  emptyText: { fontSize: 15, textAlign: 'center' },
+  tabText: { fontSize: normalize(14) },
+  list: { padding: rs(16), paddingBottom: rs(100), gap: 0 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: rs(32), gap: rs(12), marginTop: rs(40) },
+  emptyTitle: { fontSize: normalize(20) },
+  emptyText: { fontSize: normalize(15), textAlign: 'center' },
 });
+

@@ -5,6 +5,7 @@ import { StyleSheet, Pressable, Text, View } from "react-native";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useColors } from "@/hooks/useColors";
+import { rs, normalize } from "@/lib/responsive";
 
 export default function Index() {
   const { user, profile, loading, isRecovering, signOut } = useAuth();
@@ -23,7 +24,7 @@ export default function Index() {
             { backgroundColor: colors.destructive + "14" },
           ]}
         >
-          <Feather name="alert-triangle" size={40} color={colors.destructive} />
+          <Feather name="alert-triangle" size={rs(40)} color={colors.destructive} />
         </View>
         <Text
           style={[
@@ -104,29 +105,29 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 32,
-    gap: 16,
+    padding: rs(32),
+    gap: rs(16),
   },
   iconWrap: {
-    width: 80,
-    height: 80,
-    borderRadius: 24,
+    width: rs(80),
+    height: rs(80),
+    borderRadius: rs(24),
     alignItems: "center",
     justifyContent: "center",
   },
-  title: { fontSize: 22, textAlign: "center" },
-  body: { fontSize: 15, textAlign: "center", lineHeight: 22 },
+  title: { fontSize: normalize(22), textAlign: "center" },
+  body: { fontSize: normalize(15), textAlign: "center", lineHeight: rs(22) },
   stepBox: {
-    borderRadius: 14,
+    borderRadius: rs(14),
     borderWidth: 1,
-    padding: 18,
-    gap: 10,
+    padding: rs(18),
+    gap: rs(10),
     width: "100%",
   },
-  stepTitle: { fontSize: 15 },
-  step: { fontSize: 14, lineHeight: 22 },
-  retryBtn: { paddingHorizontal: 32, paddingVertical: 14, borderRadius: 12 },
-  retryText: { color: "#fff", fontSize: 16 },
-  signOutLink: { marginTop: 8 },
-  signOutText: { fontSize: 14, textDecorationLine: "underline" },
+  stepTitle: { fontSize: normalize(15) },
+  step: { fontSize: normalize(14), lineHeight: rs(22) },
+  retryBtn: { paddingHorizontal: rs(32), paddingVertical: rs(14), borderRadius: rs(12) },
+  retryText: { color: "#fff", fontSize: normalize(16) },
+  signOutLink: { marginTop: rs(8) },
+  signOutText: { fontSize: normalize(14), textDecorationLine: "underline" },
 });

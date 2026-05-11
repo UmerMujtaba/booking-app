@@ -2,6 +2,7 @@ import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { rs, normalize } from "@/lib/responsive";
 
 import { Business } from "@/features/booking/types";
 import { useColors } from "@/hooks/useColors";
@@ -49,7 +50,7 @@ export function BusinessCard({ business }: Props) {
               (CATEGORY_ICONS[business.category] ??
                 "briefcase") as keyof typeof Feather.glyphMap
             }
-            size={36}
+            size={rs(36)}
             color={colors.primary}
           />
         </View>
@@ -96,7 +97,7 @@ export function BusinessCard({ business }: Props) {
         ) : null}
 
         <View style={styles.footer}>
-          <Feather name="map-pin" size={12} color={colors.mutedForeground} />
+          <Feather name="map-pin" size={rs(12)} color={colors.mutedForeground} />
           <Text
             style={[
               styles.footerText,
@@ -107,7 +108,7 @@ export function BusinessCard({ business }: Props) {
             {business.address || "No address"}
           </Text>
           <View style={styles.dot} />
-          <Feather name="clock" size={12} color={colors.accent} />
+          <Feather name="clock" size={rs(12)} color={colors.accent} />
           <Text
             style={[
               styles.footerText,
@@ -124,68 +125,70 @@ export function BusinessCard({ business }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
+    borderRadius: rs(16),
     borderWidth: 1,
-    marginHorizontal: 16,
-    marginBottom: 12,
+    marginHorizontal: rs(16),
+    marginBottom: rs(12),
     overflow: "hidden",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
-    shadowRadius: 8,
+    shadowRadius: rs(8),
     elevation: 3,
   },
   image: {
     width: "100%",
-    height: 160,
+    height: rs(160),
     resizeMode: "cover",
   },
   imagePlaceholder: {
     width: "100%",
-    height: 160,
+    height: rs(160),
     alignItems: "center",
     justifyContent: "center",
   },
   info: {
-    padding: 16,
-    gap: 6,
+    padding: rs(16),
+    gap: rs(6),
   },
   topRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 8,
+    gap: rs(8),
   },
   name: {
-    fontSize: 17,
+    fontSize: normalize(17),
     flex: 1,
   },
   categoryBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
+    paddingHorizontal: rs(10),
+    paddingVertical: rs(4),
+    borderRadius: rs(20),
   },
   categoryText: {
-    fontSize: 12,
+    fontSize: normalize(12),
   },
   bio: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: normalize(14),
+    lineHeight: rs(20),
   },
   footer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    marginTop: 4,
+    gap: rs(4),
+    marginTop: rs(4),
   },
   footerText: {
-    fontSize: 12,
+    fontSize: normalize(12),
   },
   dot: {
-    width: 3,
-    height: 3,
-    borderRadius: 2,
+    width: rs(3),
+    height: rs(3),
+    borderRadius: rs(2),
     backgroundColor: "#9CA3AF",
-    marginHorizontal: 4,
+    marginHorizontal: rs(4),
   },
 });
+
+

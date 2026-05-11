@@ -23,9 +23,10 @@ import { Business, BusinessUpdateRequest } from "@/features/booking/types";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/lib/supabase";
-import { uploadToCloudinary } from "@/lib/cloudinary";
+import { uploadToSupabase } from "@/lib/supabase-storage";
 import { styles } from "./styles";
 import { Image } from "expo-image";
+import { rs, normalize } from "@/lib/responsive";
 
 const CATEGORIES = ["Barber", "Salon", "Spa", "Nails", "Massage", "Skincare"];
 
@@ -73,6 +74,9 @@ export default function OwnerProfileScreen() {
   const queryClient = useQueryClient();
 
   const [uploading, setUploading] = useState<string | null>(null);
+  const [localPreviews, setLocalPreviews] = useState<Record<string, string>>(
+    {},
+  );
 
   const { data: business, isLoading } = useQuery({
     queryKey: ["owner-business", user?.id],
@@ -132,7 +136,11 @@ export default function OwnerProfileScreen() {
             mediaTypes: "images",
             quality: 0.8,
           });
-          if (!result.canceled) uploadImage(result.assets[0].uri, field);
+          if (!result.canceled) {
+            const uri = result.assets[0].uri;
+            setLocalPreviews((prev) => ({ ...prev, [field]: uri }));
+            uploadImage(uri, field);
+          }
         },
       },
       {
@@ -142,7 +150,11 @@ export default function OwnerProfileScreen() {
             mediaTypes: "images",
             quality: 0.8,
           });
-          if (!result.canceled) uploadImage(result.assets[0].uri, field);
+          if (!result.canceled) {
+            const uri = result.assets[0].uri;
+            setLocalPreviews((prev) => ({ ...prev, [field]: uri }));
+            uploadImage(uri, field);
+          }
         },
       },
       { text: "Cancel", style: "cancel" },
@@ -152,11 +164,13 @@ export default function OwnerProfileScreen() {
   const uploadImage = async (uri: string, field: string) => {
     try {
       setUploading(field);
-      const url = await uploadToCloudinary(uri);
+      const url = await uploadToSupabase(uri);
+      console.log(`✅ Uploaded ${field} to Supabase:`, url);
       setForm((f) => ({ ...f, [field]: url }));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (err) {
-      Alert.alert("Upload Failed", "Could not upload image to Cloudinary.");
+      console.error(`❌ Upload error for ${field}:`, err);
+      Alert.alert("Upload Failed", "Could not upload image to Supabase.");
     } finally {
       setUploading(null);
     }
@@ -225,7 +239,6 @@ export default function OwnerProfileScreen() {
           .from("business_update_requests")
           .update({ status: "acknowledged" })
           .eq("id", latestUpdateRequest.id);
-        console.log("🚀 ~ OwnerProfileScreen ~ error:", error);
         if (error) throw error;
       },
       onSuccess: () => {
@@ -253,7 +266,7 @@ export default function OwnerProfileScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.container,
-          { paddingTop: topPad + 12, paddingBottom: insets.bottom + 60 },
+          { paddingTop: topPad + rs(12), paddingBottom: insets.bottom + rs(60) },
         ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -261,7 +274,7 @@ export default function OwnerProfileScreen() {
         <Text
           style={[
             styles.title,
-            { color: colors.text, fontFamily: "Inter_700Bold" },
+            { color: colors.text, fontFamily: "Inter_700Bold", fontSize: normalize(24) },
           ]}
         >
           {t("myBusiness")}
@@ -269,7 +282,7 @@ export default function OwnerProfileScreen() {
 
         <View style={styles.ownerCard}>
           <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-            <Text style={[styles.initials, { fontFamily: "Inter_700Bold" }]}>
+            <Text style={[styles.initials, { fontFamily: "Inter_700Bold", fontSize: normalize(18) }]}>
               {profile?.full_name
                 ?.split(" ")
                 .map((n) => n[0])
@@ -282,7 +295,7 @@ export default function OwnerProfileScreen() {
             <Text
               style={[
                 styles.ownerName,
-                { color: colors.text, fontFamily: "Inter_600SemiBold" },
+                { color: colors.text, fontFamily: "Inter_600SemiBold", fontSize: normalize(16) },
               ]}
             >
               {profile?.full_name}
@@ -296,7 +309,7 @@ export default function OwnerProfileScreen() {
               <Text
                 style={[
                   styles.roleText,
-                  { color: colors.accent, fontFamily: "Inter_500Medium" },
+                  { color: colors.accent, fontFamily: "Inter_500Medium", fontSize: normalize(12) },
                 ]}
               >
                 {t("owner")}
@@ -308,6 +321,7 @@ export default function OwnerProfileScreen() {
                 {
                   color: colors.mutedForeground,
                   fontFamily: "Inter_400Regular",
+                  fontSize: normalize(14)
                 },
               ]}
             >
@@ -325,14 +339,14 @@ export default function OwnerProfileScreen() {
           <Text
             style={[
               styles.cardTitle,
-              { color: colors.text, fontFamily: "Inter_700Bold" },
+              { color: colors.text, fontFamily: "Inter_700Bold", fontSize: normalize(18) },
             ]}
           >
             {business ? "Business Profile" : "Business Registration"}
           </Text>
 
           {latestUpdateRequest?.status === "pending" ? (
-            <View style={{ gap: 16 }}>
+            <View style={{ gap: rs(16) }}>
               <View
                 style={[
                   styles.detailBox,
@@ -344,49 +358,50 @@ export default function OwnerProfileScreen() {
                 ]}
               >
                 <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+                  style={{ flexDirection: "row", alignItems: "center", gap: rs(8) }}
                 >
-                  <Feather name="clock" size={18} color={colors.primary} />
+                  <Feather name="clock" size={rs(18)} color={colors.primary} />
                   <Text
                     style={{
                       color: colors.primary,
                       fontFamily: "Inter_600SemiBold",
+                      fontSize: normalize(14)
                     }}
                   >
                     Submitted for Approval
                   </Text>
                 </View>
-                <Text style={{ color: colors.mutedForeground, marginTop: 4 }}>
+                <Text style={{ color: colors.mutedForeground, marginTop: rs(4), fontSize: normalize(14) }}>
                   Your request is being reviewed by an admin. You cannot make
                   changes until it is approved or rejected.
                 </Text>
               </View>
 
               <View style={styles.detailBox}>
-                <Text style={styles.detailLabel}>Proposed Name</Text>
-                <Text style={[styles.detailText, { color: colors.text }]}>
+                <Text style={[styles.detailLabel, {fontSize: normalize(12)}]}>Proposed Name</Text>
+                <Text style={[styles.detailText, { color: colors.text, fontSize: normalize(14) }]}>
                   {latestUpdateRequest.proposed_name}
                 </Text>
 
-                <Text style={styles.detailLabel}>Proposed Category</Text>
-                <Text style={[styles.detailText, { color: colors.text }]}>
+                <Text style={[styles.detailLabel, {fontSize: normalize(12)}]}>Proposed Category</Text>
+                <Text style={[styles.detailText, { color: colors.text, fontSize: normalize(14) }]}>
                   {latestUpdateRequest.proposed_category}
                 </Text>
 
-                <Text style={styles.detailLabel}>Proposed Address</Text>
-                <Text style={[styles.detailText, { color: colors.text }]}>
+                <Text style={[styles.detailLabel, {fontSize: normalize(12)}]}>Proposed Address</Text>
+                <Text style={[styles.detailText, { color: colors.text, fontSize: normalize(14) }]}>
                   {latestUpdateRequest.proposed_address}
                 </Text>
 
-                <Text style={styles.detailLabel}>Operating Hours</Text>
-                <Text style={[styles.detailText, { color: colors.text }]}>
+                <Text style={[styles.detailLabel, {fontSize: normalize(12)}]}>Operating Hours</Text>
+                <Text style={[styles.detailText, { color: colors.text, fontSize: normalize(14) }]}>
                   {latestUpdateRequest.proposed_opening_time?.slice(0, 5)} -{" "}
                   {latestUpdateRequest.proposed_closing_time?.slice(0, 5)}
                 </Text>
               </View>
             </View>
           ) : latestUpdateRequest?.status === "rejected" ? (
-            <View style={{ gap: 16 }}>
+            <View style={{ gap: rs(16) }}>
               <View
                 style={[
                   styles.detailBox,
@@ -398,17 +413,18 @@ export default function OwnerProfileScreen() {
                 ]}
               >
                 <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+                  style={{ flexDirection: "row", alignItems: "center", gap: rs(8) }}
                 >
                   <Feather
                     name="alert-circle"
-                    size={18}
+                    size={rs(18)}
                     color={colors.destructive}
                   />
                   <Text
                     style={{
                       color: colors.destructive,
                       fontFamily: "Inter_600SemiBold",
+                      fontSize: normalize(14)
                     }}
                   >
                     Request Rejected
@@ -417,20 +433,21 @@ export default function OwnerProfileScreen() {
                 <Text
                   style={{
                     color: colors.text,
-                    marginTop: 8,
+                    marginTop: rs(8),
                     fontFamily: "Inter_500Medium",
+                    fontSize: normalize(14)
                   }}
                 >
                   Reason: {latestUpdateRequest.rejection_reason}
                 </Text>
-                <Text style={{ color: colors.mutedForeground, marginTop: 4 }}>
+                <Text style={{ color: colors.mutedForeground, marginTop: rs(4), fontSize: normalize(14) }}>
                   Please correct the issues and submit a new request.
                 </Text>
 
                 <Pressable
                   style={[
                     styles.saveBtn,
-                    { backgroundColor: colors.destructive, marginTop: 12 },
+                    { backgroundColor: colors.destructive, marginTop: rs(12) },
                   ]}
                   onPress={() => acknowledgeRejection()}
                   disabled={acknowledging}
@@ -446,7 +463,7 @@ export default function OwnerProfileScreen() {
           ) : (
             <>
               {!business && (
-                <Text style={{ color: colors.mutedForeground }}>
+                <Text style={{ color: colors.mutedForeground, fontSize: normalize(14) }}>
                   Fill in the details below to register your business.
                 </Text>
               )}
@@ -455,7 +472,7 @@ export default function OwnerProfileScreen() {
                 <Text
                   style={[
                     styles.label,
-                    { color: colors.text, fontFamily: "Inter_500Medium" },
+                    { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
                   ]}
                 >
                   {t("businessName")}
@@ -471,13 +488,13 @@ export default function OwnerProfileScreen() {
                 >
                   <Feather
                     name="briefcase"
-                    size={16}
+                    size={rs(16)}
                     color={colors.mutedForeground}
                   />
                   <TextInput
                     style={[
                       styles.input,
-                      { color: colors.text, fontFamily: "Inter_400Regular" },
+                      { color: colors.text, fontFamily: "Inter_400Regular", fontSize: normalize(14) },
                     ]}
                     value={form.name}
                     onChangeText={(v) => setForm((f) => ({ ...f, name: v }))}
@@ -491,7 +508,7 @@ export default function OwnerProfileScreen() {
                 <Text
                   style={[
                     styles.label,
-                    { color: colors.text, fontFamily: "Inter_500Medium" },
+                    { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
                   ]}
                 >
                   {t("category")}
@@ -528,6 +545,7 @@ export default function OwnerProfileScreen() {
                               form.category === cat
                                 ? "Inter_600SemiBold"
                                 : "Inter_400Regular",
+                            fontSize: normalize(14)
                           },
                         ]}
                       >
@@ -542,7 +560,7 @@ export default function OwnerProfileScreen() {
                 <Text
                   style={[
                     styles.label,
-                    { color: colors.text, fontFamily: "Inter_500Medium" },
+                    { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
                   ]}
                 >
                   {t("bio")}
@@ -559,7 +577,7 @@ export default function OwnerProfileScreen() {
                   <TextInput
                     style={[
                       styles.textArea,
-                      { color: colors.text, fontFamily: "Inter_400Regular" },
+                      { color: colors.text, fontFamily: "Inter_400Regular", fontSize: normalize(14) },
                     ]}
                     value={form.bio}
                     onChangeText={(v) => setForm((f) => ({ ...f, bio: v }))}
@@ -575,7 +593,7 @@ export default function OwnerProfileScreen() {
                 <Text
                   style={[
                     styles.label,
-                    { color: colors.text, fontFamily: "Inter_500Medium" },
+                    { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
                   ]}
                 >
                   {"Business Address"}
@@ -591,13 +609,13 @@ export default function OwnerProfileScreen() {
                 >
                   <Feather
                     name="map-pin"
-                    size={16}
+                    size={rs(16)}
                     color={colors.mutedForeground}
                   />
                   <TextInput
                     style={[
                       styles.input,
-                      { color: colors.text, fontFamily: "Inter_400Regular" },
+                      { color: colors.text, fontFamily: "Inter_400Regular", fontSize: normalize(14) },
                     ]}
                     value={form.address}
                     onChangeText={(v) => setForm((f) => ({ ...f, address: v }))}
@@ -607,12 +625,12 @@ export default function OwnerProfileScreen() {
                 </View>
               </View>
 
-              <View style={{ flexDirection: "row", gap: 12 }}>
+              <View style={{ flexDirection: "row", gap: rs(12) }}>
                 <View style={[styles.field, { flex: 1 }]}>
                   <Text
                     style={[
                       styles.label,
-                      { color: colors.text, fontFamily: "Inter_500Medium" },
+                      { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
                     ]}
                   >
                     {"CNIC Front"}
@@ -627,9 +645,13 @@ export default function OwnerProfileScreen() {
                     ]}
                     onPress={() => handleImagePick("cnic_front_image")}
                   >
-                    {form.cnic_front_image ? (
+                    {form.cnic_front_image || localPreviews.cnic_front_image ? (
                       <Image
-                        source={{ uri: form.cnic_front_image }}
+                        source={{
+                          uri:
+                            localPreviews.cnic_front_image ||
+                            form.cnic_front_image,
+                        }}
                         style={styles.uploadPreview}
                         contentFit="cover"
                       />
@@ -637,13 +659,13 @@ export default function OwnerProfileScreen() {
                       <View style={styles.uploadPlaceholder}>
                         <Feather
                           name="camera"
-                          size={24}
+                          size={rs(24)}
                           color={colors.mutedForeground}
                         />
                         <Text
                           style={[
                             styles.uploadPlaceholderText,
-                            { color: colors.mutedForeground },
+                            { color: colors.mutedForeground, fontSize: normalize(12) },
                           ]}
                         >
                           {"Upload Front"}
@@ -662,7 +684,7 @@ export default function OwnerProfileScreen() {
                   <Text
                     style={[
                       styles.label,
-                      { color: colors.text, fontFamily: "Inter_500Medium" },
+                      { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
                     ]}
                   >
                     {"CNIC Back"}
@@ -677,9 +699,13 @@ export default function OwnerProfileScreen() {
                     ]}
                     onPress={() => handleImagePick("cnic_back_image")}
                   >
-                    {form.cnic_back_image ? (
+                    {form.cnic_back_image || localPreviews.cnic_back_image ? (
                       <Image
-                        source={{ uri: form.cnic_back_image }}
+                        source={{
+                          uri:
+                            localPreviews.cnic_back_image ||
+                            form.cnic_back_image,
+                        }}
                         style={styles.uploadPreview}
                         contentFit="cover"
                       />
@@ -687,13 +713,13 @@ export default function OwnerProfileScreen() {
                       <View style={styles.uploadPlaceholder}>
                         <Feather
                           name="camera"
-                          size={24}
+                          size={rs(24)}
                           color={colors.mutedForeground}
                         />
                         <Text
                           style={[
                             styles.uploadPlaceholderText,
-                            { color: colors.mutedForeground },
+                            { color: colors.mutedForeground, fontSize: normalize(12) },
                           ]}
                         >
                           {"Upload Back"}
@@ -709,12 +735,12 @@ export default function OwnerProfileScreen() {
                 </View>
               </View>
 
-              <View style={{ flexDirection: "row", gap: 12 }}>
+              <View style={{ flexDirection: "row", gap: rs(12) }}>
                 <View style={[styles.field, { flex: 1 }]}>
                   <Text
                     style={[
                       styles.label,
-                      { color: colors.text, fontFamily: "Inter_500Medium" },
+                      { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
                     ]}
                   >
                     {"Opening Time"}
@@ -730,13 +756,13 @@ export default function OwnerProfileScreen() {
                   >
                     <Feather
                       name="clock"
-                      size={16}
+                      size={rs(16)}
                       color={colors.mutedForeground}
                     />
                     <TextInput
                       style={[
                         styles.input,
-                        { color: colors.text, fontFamily: "Inter_400Regular" },
+                        { color: colors.text, fontFamily: "Inter_400Regular", fontSize: normalize(14) },
                       ]}
                       value={form.opening_time}
                       onChangeText={(v) =>
@@ -752,7 +778,7 @@ export default function OwnerProfileScreen() {
                   <Text
                     style={[
                       styles.label,
-                      { color: colors.text, fontFamily: "Inter_500Medium" },
+                      { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
                     ]}
                   >
                     {"Closing Time"}
@@ -768,13 +794,13 @@ export default function OwnerProfileScreen() {
                   >
                     <Feather
                       name="clock"
-                      size={16}
+                      size={rs(16)}
                       color={colors.mutedForeground}
                     />
                     <TextInput
                       style={[
                         styles.input,
-                        { color: colors.text, fontFamily: "Inter_400Regular" },
+                        { color: colors.text, fontFamily: "Inter_400Regular", fontSize: normalize(14) },
                       ]}
                       value={form.closing_time}
                       onChangeText={(v) =>
@@ -788,11 +814,11 @@ export default function OwnerProfileScreen() {
               </View>
 
               <Pressable
-                style={({ pressed }) => [
+                style={[
                   styles.saveBtn,
                   {
                     backgroundColor: colors.primary,
-                    opacity: pressed || saving ? 0.85 : 1,
+                    opacity: saving ? 0.8 : 1,
                   },
                 ]}
                 onPress={() => requestBusinessUpdate()}
@@ -804,10 +830,10 @@ export default function OwnerProfileScreen() {
                   <Text
                     style={[
                       styles.saveBtnText,
-                      { fontFamily: "Inter_700Bold" },
+                      { fontFamily: "Inter_700Bold", fontSize: normalize(14) },
                     ]}
                   >
-                    {business ? "Submit Update" : "Register Business"}
+                    {business ? "Request Updates" : "Submit Registration"}
                   </Text>
                 )}
               </Pressable>
@@ -824,66 +850,89 @@ export default function OwnerProfileScreen() {
           <Text
             style={[
               styles.cardTitle,
-              { color: colors.text, fontFamily: "Inter_700Bold" },
+              { color: colors.text, fontFamily: "Inter_700Bold", fontSize: normalize(18) },
             ]}
           >
-            {t("language")}
+            {t("settings")}
           </Text>
-          <View style={styles.langRow}>
-            {(["en", "ur"] as const).map((lang) => (
+
+          <View style={styles.field}>
+            <Text
+              style={[
+                styles.label,
+                { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
+              ]}
+            >
+              {t("language")}
+            </Text>
+            <View style={styles.langRow}>
               <Pressable
-                key={lang}
                 style={[
                   styles.langBtn,
                   {
                     backgroundColor:
-                      language === lang ? colors.primary : colors.muted,
-                    borderColor:
-                      language === lang ? colors.primary : colors.border,
+                      language === "en" ? colors.primary : colors.muted,
                   },
                 ]}
-                onPress={() => setLanguage(lang)}
+                onPress={() => setLanguage("en")}
               >
                 <Text
                   style={[
                     styles.langText,
                     {
-                      color: language === lang ? "#fff" : colors.text,
-                      fontFamily:
-                        language === lang
-                          ? "Inter_600SemiBold"
-                          : "Inter_400Regular",
+                      color: language === "en" ? "#fff" : colors.text,
+                      fontFamily: "Inter_600SemiBold",
+                      fontSize: normalize(14)
                     },
                   ]}
                 >
-                  {lang === "en" ? t("english") : t("urdu")}
+                  English
                 </Text>
               </Pressable>
-            ))}
+              <Pressable
+                style={[
+                  styles.langBtn,
+                  {
+                    backgroundColor:
+                      language === "ur" ? colors.primary : colors.muted,
+                  },
+                ]}
+                onPress={() => setLanguage("ur")}
+              >
+                <Text
+                  style={[
+                    styles.langText,
+                    {
+                      color: language === "ur" ? "#fff" : colors.text,
+                      fontFamily: "Inter_600SemiBold",
+                      fontSize: normalize(14)
+                    },
+                  ]}
+                >
+                  اردو
+                </Text>
+              </Pressable>
+            </View>
           </View>
         </View>
 
         <Pressable
-          style={({ pressed }) => [
-            styles.signOutBtn,
-            {
-              backgroundColor: colors.destructive + "12",
-              borderColor: colors.destructive + "30",
-              opacity: pressed ? 0.8 : 1,
-            },
+          style={[
+            styles.logoutBtn,
+            { backgroundColor: colors.destructive + "14" },
           ]}
-          onPress={() =>
-            Alert.alert(t("signOut"), "Sign out of your account?", [
+          onPress={() => {
+            Alert.alert(t("signOut"), t("signOutConfirm"), [
               { text: t("cancel"), style: "cancel" },
               { text: t("signOut"), style: "destructive", onPress: signOut },
-            ])
-          }
+            ]);
+          }}
         >
-          <Feather name="log-out" size={18} color={colors.destructive} />
+          <Feather name="log-out" size={rs(18)} color={colors.destructive} />
           <Text
             style={[
-              styles.signOutText,
-              { color: colors.destructive, fontFamily: "Inter_600SemiBold" },
+              styles.logoutText,
+              { color: colors.destructive, fontFamily: "Inter_600SemiBold", fontSize: normalize(14) },
             ]}
           >
             {t("signOut")}

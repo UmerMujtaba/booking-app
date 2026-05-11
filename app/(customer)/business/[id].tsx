@@ -205,7 +205,7 @@ export default function BusinessDetailScreen() {
             {
               backgroundColor: colors.card,
               borderTopColor: colors.border,
-              paddingBottom: insets.bottom + 12,
+              paddingBottom: insets.bottom + 60,
             },
           ]}
         >

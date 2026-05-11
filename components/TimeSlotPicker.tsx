@@ -1,10 +1,11 @@
-import { Feather } from '@expo/vector-icons';
-import React, { useMemo } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Feather } from "@expo/vector-icons";
+import React, { useMemo } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { rs, normalize } from "@/lib/responsive";
 
-import { Appointment } from '@/features/booking/types';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from '@/hooks/useTranslation';
+import { Appointment } from "@/features/booking/types";
+import { useColors } from "@/hooks/useColors";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface TimeSlot {
   time: Date;
@@ -35,14 +36,18 @@ function generateSlots(date: Date, durationMins: number): Date[] {
   return slots;
 }
 
-function isSlotAvailable(slot: Date, durationMins: number, appointments: Appointment[]): boolean {
+function isSlotAvailable(
+  slot: Date,
+  durationMins: number,
+  appointments: Appointment[],
+): boolean {
   const slotStart = slot.getTime();
   const slotEnd = slotStart + durationMins * 60 * 1000;
   const now = Date.now();
   if (slotStart < now) return false;
 
   for (const appt of appointments) {
-    if (appt.status === 'cancelled') continue;
+    if (appt.status === "cancelled") continue;
     const apptStart = new Date(appt.start_time).getTime();
     // Get duration from service if available, else default 30 min
     const apptDur = (appt.service?.duration_minutes ?? 30) * 60 * 1000;
@@ -65,7 +70,10 @@ export function TimeSlotPicker({
   const slots: TimeSlot[] = useMemo(() => {
     return generateSlots(selectedDate, durationMinutes).map((time) => ({
       time,
-      label: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      label: time.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
       available: isSlotAvailable(time, durationMinutes, existingAppointments),
     }));
   }, [selectedDate, durationMinutes, existingAppointments]);
@@ -75,9 +83,14 @@ export function TimeSlotPicker({
   if (availableSlots.length === 0) {
     return (
       <View style={styles.empty}>
-        <Feather name="calendar" size={32} color={colors.mutedForeground} />
-        <Text style={[styles.emptyText, { color: colors.mutedForeground, fontFamily: 'Inter_400Regular' }]}>
-          {t('noSlotsAvailable')}
+        <Feather name="calendar" size={rs(32)} color={colors.mutedForeground} />
+        <Text
+          style={[
+            styles.emptyText,
+            { color: colors.mutedForeground, fontFamily: "Inter_400Regular" },
+          ]}
+        >
+          {t("noSlotsAvailable")}
         </Text>
       </View>
     );
@@ -101,9 +114,13 @@ export function TimeSlotPicker({
                 backgroundColor: isSelected
                   ? colors.primary
                   : item.available
-                  ? colors.card
-                  : colors.muted,
-                borderColor: isSelected ? colors.primary : item.available ? colors.border : colors.muted,
+                    ? colors.card
+                    : colors.muted,
+                borderColor: isSelected
+                  ? colors.primary
+                  : item.available
+                    ? colors.border
+                    : colors.muted,
                 opacity: item.available ? 1 : 0.45,
               },
             ]}
@@ -113,8 +130,14 @@ export function TimeSlotPicker({
               style={[
                 styles.slotText,
                 {
-                  color: isSelected ? '#fff' : item.available ? colors.text : colors.mutedForeground,
-                  fontFamily: isSelected ? 'Inter_600SemiBold' : 'Inter_400Regular',
+                  color: isSelected
+                    ? "#fff"
+                    : item.available
+                      ? colors.text
+                      : colors.mutedForeground,
+                  fontFamily: isSelected
+                    ? "Inter_600SemiBold"
+                    : "Inter_400Regular",
                 },
               ]}
             >
@@ -128,16 +151,18 @@ export function TimeSlotPicker({
 }
 
 const styles = StyleSheet.create({
-  grid: { paddingVertical: 4 },
+  grid: { paddingVertical: rs(4) },
   slot: {
     flex: 1,
-    margin: 4,
-    paddingVertical: 12,
-    borderRadius: 10,
+    margin: rs(3),
+    paddingVertical: rs(10),
+    borderRadius: rs(10),
     borderWidth: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
-  slotText: { fontSize: 14 },
-  empty: { alignItems: 'center', padding: 24, gap: 8 },
-  emptyText: { fontSize: 14, textAlign: 'center' },
+  slotText: { fontSize: normalize(13) },
+  empty: { alignItems: "center", padding: rs(24), gap: rs(8) },
+  emptyText: { fontSize: normalize(14), textAlign: "center" },
 });
+
+

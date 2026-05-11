@@ -19,6 +19,7 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/lib/supabase";
+import { rs, normalize } from "@/lib/responsive";
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
@@ -79,7 +80,7 @@ export default function LoginScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.container,
-          { paddingTop: insets.top + 60, paddingBottom: insets.bottom + 24 },
+          { paddingTop: insets.top + rs(60), paddingBottom: insets.bottom + rs(24) },
         ]}
         keyboardShouldPersistTaps="handled"
       >
@@ -90,7 +91,7 @@ export default function LoginScreen() {
               { backgroundColor: colors.primary + "14" },
             ]}
           >
-            <Feather name="calendar" size={40} color={colors.primary} />
+            <Feather name="calendar" size={rs(40)} color={colors.primary} />
           </View>
           <Text
             style={[
@@ -126,7 +127,7 @@ export default function LoginScreen() {
                 { backgroundColor: colors.card, borderColor: colors.border },
               ]}
             >
-              <Feather name="mail" size={18} color={colors.mutedForeground} />
+              <Feather name="mail" size={rs(18)} color={colors.mutedForeground} />
               <TextInput
                 style={[
                   styles.input,
@@ -158,7 +159,7 @@ export default function LoginScreen() {
                 { backgroundColor: colors.card, borderColor: colors.border },
               ]}
             >
-              <Feather name="lock" size={18} color={colors.mutedForeground} />
+              <Feather name="lock" size={rs(18)} color={colors.mutedForeground} />
               <TextInput
                 style={[
                   styles.input,
@@ -174,7 +175,7 @@ export default function LoginScreen() {
               <Pressable onPress={() => setShowPassword((p) => !p)} hitSlop={8}>
                 <Feather
                   name={showPassword ? "eye-off" : "eye"}
-                  size={18}
+                  size={rs(18)}
                   color={colors.mutedForeground}
                 />
               </Pressable>
@@ -275,38 +276,38 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, paddingHorizontal: 24 },
-  header: { alignItems: "center", marginBottom: 40, gap: 12 },
+  container: { flexGrow: 1, paddingHorizontal: rs(24) },
+  header: { alignItems: "center", marginBottom: rs(40), gap: rs(12) },
   logoWrap: {
-    width: 80,
-    height: 80,
-    borderRadius: 24,
+    width: rs(80),
+    height: rs(80),
+    borderRadius: rs(24),
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 8,
+    marginBottom: rs(8),
   },
-  title: { fontSize: 28 },
-  subtitle: { fontSize: 16 },
-  form: { gap: 18, marginBottom: 32 },
-  fieldWrap: { gap: 6 },
-  label: { fontSize: 14 },
+  title: { fontSize: normalize(28) },
+  subtitle: { fontSize: normalize(16) },
+  form: { gap: rs(18), marginBottom: rs(32) },
+  fieldWrap: { gap: rs(6) },
+  label: { fontSize: normalize(14) },
   inputWrap: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: rs(12),
     borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    gap: 10,
+    paddingHorizontal: rs(14),
+    paddingVertical: rs(14),
+    gap: rs(10),
   },
-  input: { flex: 1, fontSize: 16 },
+  input: { flex: 1, fontSize: normalize(16) },
   signInBtn: {
-    paddingVertical: 16,
-    borderRadius: 14,
+    paddingVertical: rs(16),
+    borderRadius: rs(14),
     alignItems: "center",
-    marginTop: 8,
+    marginTop: rs(8),
   },
-  signInText: { color: "#fff", fontSize: 17 },
+  signInText: { color: "#fff", fontSize: normalize(17) },
   forgotPasswordFooter: {
     flexDirection: "row",
     alignSelf: "flex-end",
@@ -316,6 +317,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  footerText: { fontSize: 15 },
-  footerLink: { fontSize: 15 },
+  footerText: { fontSize: normalize(15) },
+  footerLink: { fontSize: normalize(15) },
 });

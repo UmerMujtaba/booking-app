@@ -11,8 +11,8 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
+  TextInput,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -23,6 +23,7 @@ import { Business, Service } from "@/features/booking/types";
 import { supabase } from "@/lib/supabase";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
+import { rs, normalize } from "@/lib/responsive";
 
 async function fetchOwnerBusiness(ownerId: string): Promise<Business | null> {
   const { data } = await supabase
@@ -169,7 +170,7 @@ export default function ServicesScreen() {
       <View
         style={[
           styles.header,
-          { paddingTop: topPad + 12, borderBottomColor: colors.border },
+          { paddingTop: topPad + rs(12), borderBottomColor: colors.border },
         ]}
       >
         <Text
@@ -184,13 +185,13 @@ export default function ServicesScreen() {
           style={[styles.addBtn, { backgroundColor: colors.primary }]}
           onPress={openAdd}
         >
-          <Feather name="plus" size={20} color="#fff" />
+          <Feather name="plus" size={rs(20)} color="#fff" />
         </Pressable>
       </View>
 
       {!business ? (
         <View style={styles.center}>
-          <Feather name="briefcase" size={40} color={colors.mutedForeground} />
+          <Feather name="briefcase" size={rs(40)} color={colors.mutedForeground} />
           <Text
             style={[
               styles.emptyTitle,
@@ -238,7 +239,7 @@ export default function ServicesScreen() {
             <View style={styles.center}>
               <Feather
                 name="scissors"
-                size={40}
+                size={rs(40)}
                 color={colors.mutedForeground}
               />
               <Text
@@ -423,72 +424,73 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingBottom: 14,
+    paddingHorizontal: rs(20),
+    paddingBottom: rs(14),
     borderBottomWidth: 1,
   },
-  title: { fontSize: 26 },
+  title: { fontSize: normalize(26) },
   addBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: rs(40),
+    height: rs(40),
+    borderRadius: rs(12),
     alignItems: "center",
     justifyContent: "center",
   },
-  list: { padding: 16, paddingBottom: 100 },
+  list: { padding: rs(16), paddingBottom: rs(100) },
   center: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 32,
-    gap: 12,
-    marginTop: 60,
+    padding: rs(32),
+    gap: rs(12),
+    marginTop: rs(60),
   },
-  emptyTitle: { fontSize: 18 },
-  emptyText: { fontSize: 15, textAlign: "center" },
+  emptyTitle: { fontSize: normalize(18) },
+  emptyText: { fontSize: normalize(15), textAlign: "center" },
   ctaBtn: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 10,
-    marginTop: 8,
+    paddingHorizontal: rs(24),
+    paddingVertical: rs(12),
+    borderRadius: rs(10),
+    marginTop: rs(8),
   },
-  ctaText: { color: "#fff", fontSize: 15 },
+  ctaText: { color: "#fff", fontSize: normalize(15) },
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "flex-end",
   },
   sheet: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
-    gap: 16,
+    borderTopLeftRadius: rs(24),
+    borderTopRightRadius: rs(24),
+    padding: rs(24),
+    gap: rs(16),
   },
-  handle: { width: 40, height: 4, borderRadius: 2, alignSelf: "center" },
-  sheetTitle: { fontSize: 20 },
-  field: { gap: 6 },
-  fieldLabel: { fontSize: 14 },
+  handle: { width: rs(40), height: rs(4), borderRadius: rs(2), alignSelf: "center" },
+  sheetTitle: { fontSize: normalize(20) },
+  field: { gap: rs(6) },
+  fieldLabel: { fontSize: normalize(14) },
   fieldInput: {
-    borderRadius: 10,
+    borderRadius: rs(10),
     borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: rs(14),
+    paddingVertical: rs(12),
   },
-  textInput: { fontSize: 16 },
-  sheetBtns: { flexDirection: "row", gap: 10, marginTop: 4 },
+  textInput: { fontSize: normalize(16) },
+  sheetBtns: { flexDirection: "row", gap: rs(10), marginTop: rs(4) },
   cancelBtn: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 10,
+    paddingVertical: rs(14),
+    borderRadius: rs(10),
     alignItems: "center",
     borderWidth: 1,
   },
-  cancelText: { fontSize: 15 },
+  cancelText: { fontSize: normalize(15) },
   saveBtn: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 10,
+    paddingVertical: rs(14),
+    borderRadius: rs(10),
     alignItems: "center",
   },
-  saveText: { color: "#fff", fontSize: 15 },
+  saveText: { color: "#fff", fontSize: normalize(15) },
 });
+

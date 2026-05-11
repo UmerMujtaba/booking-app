@@ -21,6 +21,8 @@ import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/features/auth/AuthContext";
 import { getGreeting } from "@/constants";
+import { rs, normalize } from "@/lib/responsive";
+import { router } from "expo-router";
 
 const CATEGORIES = [
   "All",
@@ -133,14 +135,15 @@ export default function DiscoverScreen() {
               {profile?.full_name?.split(" ")[0] ?? "Friend"}
             </Text>
           </View>
-          <View
+          <Pressable
+            onPress={() => router.push("/profile")}
             style={[
               styles.avatarWrap,
               { backgroundColor: colors.primary + "18" },
             ]}
           >
-            <Feather name="user" size={22} color={colors.primary} />
-          </View>
+            <Feather name="user" size={rs(22)} color={colors.primary} />
+          </Pressable>
         </View>
 
         <View
@@ -149,7 +152,7 @@ export default function DiscoverScreen() {
             { backgroundColor: colors.card, borderColor: colors.border },
           ]}
         >
-          <Feather name="search" size={18} color={colors.mutedForeground} />
+          <Feather name="search" size={rs(18)} color={colors.mutedForeground} />
           <TextInput
             style={[
               styles.searchInput,
@@ -162,7 +165,7 @@ export default function DiscoverScreen() {
           />
           {search.length > 0 && (
             <Pressable onPress={() => setSearch("")} hitSlop={8}>
-              <Feather name="x" size={16} color={colors.mutedForeground} />
+              <Feather name="x" size={rs(16)} color={colors.mutedForeground} />
             </Pressable>
           )}
         </View>
@@ -220,7 +223,7 @@ export default function DiscoverScreen() {
           >
             <Feather
               name="map-pin"
-              size={18}
+              size={rs(18)}
               color={selectedLocation ? "#fff" : colors.text}
             />
           </Pressable>
@@ -256,7 +259,7 @@ export default function DiscoverScreen() {
                 Select Location
               </Text>
               <Pressable onPress={() => setIsFilterModalVisible(false)}>
-                <Feather name="x" size={24} color={colors.text} />
+                <Feather name="x" size={rs(24)} color={colors.text} />
               </Pressable>
             </View>
 
@@ -285,7 +288,7 @@ export default function DiscoverScreen() {
                   All Locations
                 </Text>
                 {!selectedLocation && (
-                  <Feather name="check" size={18} color={colors.primary} />
+                  <Feather name="check" size={rs(18)} color={colors.primary} />
                 )}
               </Pressable>
 
@@ -319,7 +322,7 @@ export default function DiscoverScreen() {
                     {loc}
                   </Text>
                   {selectedLocation === loc && (
-                    <Feather name="check" size={18} color={colors.primary} />
+                    <Feather name="check" size={rs(18)} color={colors.primary} />
                   )}
                 </Pressable>
               ))}
@@ -334,7 +337,7 @@ export default function DiscoverScreen() {
         </View>
       ) : error ? (
         <View style={styles.center}>
-          <Feather name="wifi-off" size={36} color={colors.mutedForeground} />
+          <Feather name="wifi-off" size={rs(36)} color={colors.mutedForeground} />
           <Text
             style={[
               styles.emptyText,
@@ -372,9 +375,8 @@ export default function DiscoverScreen() {
           }
           ListEmptyComponent={
             <View style={styles.center}>
-              <Feather
                 name="map-pin"
-                size={36}
+                size={rs(36)}
                 color={colors.mutedForeground}
               />
               <Text
@@ -408,58 +410,54 @@ export default function DiscoverScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { paddingBottom: 12, borderBottomWidth: 0.5 },
+  header: { paddingBottom: rs(12), borderBottomWidth: 0.5 },
   headerTop: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
-    marginBottom: 14,
+    paddingHorizontal: rs(20),
+    marginBottom: rs(14),
   },
-  greeting: { fontSize: 14 },
-  name: { fontSize: 22, marginTop: 2 },
+  greeting: { fontSize: normalize(14) },
+  name: { fontSize: normalize(22), marginTop: rs(2) },
   avatarWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: rs(44),
+    height: rs(44),
+    borderRadius: rs(22),
     alignItems: "center",
     justifyContent: "center",
   },
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: 16,
-    borderRadius: 12,
+    marginHorizontal: rs(16),
+    borderRadius: rs(12),
     borderWidth: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 2,
-    gap: 10,
-    marginBottom: 14,
+    paddingHorizontal: rs(14),
+    paddingVertical: rs(2),
+    gap: rs(10),
+    marginBottom: rs(14),
   },
-  searchInput: { flex: 1, fontSize: 15 },
+  searchInput: { flex: 1, fontSize: normalize(15) },
   categoryRowContainer: {
     flexDirection: "row",
     alignItems: "center",
-    // paddingLeft: 0,
-    // paddingRight: 16,
-    // marginTop: 4,
-    paddingHorizontal: 20,
+    paddingHorizontal: rs(20),
   },
-
   categoryScroll: { flexGrow: 0 },
-  categoryContent: { paddingHorizontal: 16, gap: 8, flexDirection: "row" },
+  categoryContent: { paddingHorizontal: rs(16), gap: rs(8), flexDirection: "row" },
   categoryChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 4,
-    borderRadius: 20,
-    marginRight: 8,
+    paddingHorizontal: rs(14),
+    paddingVertical: rs(4),
+    borderRadius: rs(20),
+    marginRight: rs(8),
     borderWidth: 1,
   },
-  categoryText: { fontSize: 14 },
+  categoryText: { fontSize: normalize(14) },
   filterBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
+    width: rs(40),
+    height: rs(40),
+    borderRadius: rs(10),
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
@@ -472,43 +470,44 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: rs(24),
+    borderTopRightRadius: rs(24),
     borderTopWidth: 1,
     maxHeight: "70%",
-    paddingBottom: 40,
+    paddingBottom: rs(40),
   },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 20,
+    padding: rs(20),
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "rgba(0,0,0,0.1)",
   },
-  modalTitle: { fontSize: 18 },
-  locationList: { padding: 10 },
+  modalTitle: { fontSize: normalize(18) },
+  locationList: { padding: rs(10) },
   locationItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 10,
+    paddingVertical: rs(16),
+    paddingHorizontal: rs(10),
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  locationText: { fontSize: 16 },
-  list: { paddingTop: 16, paddingBottom: 100 },
-  sectionTitle: { fontSize: 16, marginHorizontal: 16, marginBottom: 12 },
+  locationText: { fontSize: normalize(16) },
+  list: { paddingTop: rs(16), paddingBottom: rs(100) },
+  sectionTitle: { fontSize: normalize(16), marginHorizontal: rs(16), marginBottom: rs(12) },
   center: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 32,
-    gap: 12,
-    marginTop: 60,
+    padding: rs(32),
+    gap: rs(12),
+    marginTop: rs(60),
   },
-  emptyTitle: { fontSize: 18 },
-  emptyText: { fontSize: 15, textAlign: "center" },
-  retryBtn: { paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 },
-  retryText: { color: "#fff", fontSize: 15 },
+  emptyTitle: { fontSize: normalize(18) },
+  emptyText: { fontSize: normalize(15), textAlign: "center" },
+  retryBtn: { paddingHorizontal: rs(24), paddingVertical: rs(12), borderRadius: rs(10) },
+  retryText: { color: "#fff", fontSize: normalize(15) },
 });
+

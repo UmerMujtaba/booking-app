@@ -1,10 +1,11 @@
-import { Feather } from '@expo/vector-icons';
-import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Feather } from "@expo/vector-icons";
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { rs, normalize } from "@/lib/responsive";
 
-import { Service } from '@/features/booking/types';
-import { useColors } from '@/hooks/useColors';
-import { useTranslation } from '@/hooks/useTranslation';
+import { Service } from "@/features/booking/types";
+import { useColors } from "@/hooks/useColors";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Props {
   service: Service;
@@ -15,7 +16,14 @@ interface Props {
   onDelete?: () => void;
 }
 
-export function ServiceCard({ service, onSelect, selected, showActions, onEdit, onDelete }: Props) {
+export function ServiceCard({
+  service,
+  onSelect,
+  selected,
+  showActions,
+  onEdit,
+  onDelete,
+}: Props) {
   const colors = useColors();
   const { t } = useTranslation();
 
@@ -24,7 +32,7 @@ export function ServiceCard({ service, onSelect, selected, showActions, onEdit, 
       style={({ pressed }) => [
         styles.card,
         {
-          backgroundColor: selected ? colors.primary + '12' : colors.card,
+          backgroundColor: selected ? colors.primary + "12" : colors.card,
           borderColor: selected ? colors.primary : colors.border,
           opacity: pressed && onSelect ? 0.9 : 1,
         },
@@ -32,37 +40,59 @@ export function ServiceCard({ service, onSelect, selected, showActions, onEdit, 
       onPress={() => onSelect?.(service)}
     >
       <View style={styles.left}>
-        <View style={[styles.iconWrap, { backgroundColor: colors.accent + '18' }]}>
-          <Feather name="scissors" size={18} color={colors.accent} />
+        <View
+          style={[styles.iconWrap, { backgroundColor: colors.accent + "18" }]}
+        >
+          <Feather name="scissors" size={rs(18)} color={colors.accent} />
         </View>
         <View style={styles.textWrap}>
-          <Text style={[styles.name, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
+          <Text
+            style={[
+              styles.name,
+              { color: colors.text, fontFamily: "Inter_600SemiBold" },
+            ]}
+          >
             {service.name}
           </Text>
           <View style={styles.meta}>
-            <Feather name="clock" size={12} color={colors.mutedForeground} />
-            <Text style={[styles.metaText, { color: colors.mutedForeground, fontFamily: 'Inter_400Regular' }]}>
-              {service.duration_minutes} {t('duration')}
+            <Feather name="clock" size={rs(12)} color={colors.mutedForeground} />
+            <Text
+              style={[
+                styles.metaText,
+                {
+                  color: colors.mutedForeground,
+                  fontFamily: "Inter_400Regular",
+                },
+              ]}
+            >
+              {service.duration_minutes} {t("duration")}
             </Text>
           </View>
         </View>
       </View>
 
       <View style={styles.right}>
-        <Text style={[styles.price, { color: colors.primary, fontFamily: 'Inter_700Bold' }]}>
+        <Text
+          style={[
+            styles.price,
+            { color: colors.primary, fontFamily: "Inter_700Bold" },
+          ]}
+        >
           ${Number(service.price).toFixed(0)}
         </Text>
         {showActions && (
           <View style={styles.actions}>
             <Pressable onPress={onEdit} style={styles.actionBtn} hitSlop={8}>
-              <Feather name="edit-2" size={16} color={colors.mutedForeground} />
+              <Feather name="edit-2" size={rs(16)} color={colors.mutedForeground} />
             </Pressable>
             <Pressable onPress={onDelete} style={styles.actionBtn} hitSlop={8}>
-              <Feather name="trash-2" size={16} color={colors.destructive} />
+              <Feather name="trash-2" size={rs(16)} color={colors.destructive} />
             </Pressable>
           </View>
         )}
-        {selected && <Feather name="check-circle" size={20} color={colors.primary} />}
+        {selected && (
+          <Feather name="check-circle" size={rs(20)} color={colors.primary} />
+        )}
       </View>
     </Pressable>
   );
@@ -70,33 +100,35 @@ export function ServiceCard({ service, onSelect, selected, showActions, onEdit, 
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 14,
-    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: rs(14),
+    borderRadius: rs(12),
     borderWidth: 1,
-    marginBottom: 10,
+    marginBottom: rs(10),
   },
   left: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: rs(12),
     flex: 1,
   },
   iconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: rs(40),
+    height: rs(40),
+    borderRadius: rs(10),
+    alignItems: "center",
+    justifyContent: "center",
   },
-  textWrap: { flex: 1, gap: 3 },
-  name: { fontSize: 15 },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  metaText: { fontSize: 13 },
-  right: { alignItems: 'flex-end', gap: 6 },
-  price: { fontSize: 18 },
-  actions: { flexDirection: 'row', gap: 12 },
-  actionBtn: { padding: 2 },
+  textWrap: { flex: 1, gap: rs(3) },
+  name: { fontSize: normalize(15) },
+  meta: { flexDirection: "row", alignItems: "center", gap: rs(4) },
+  metaText: { fontSize: normalize(11) },
+  right: { alignItems: "flex-end", gap: rs(6) },
+  price: { fontSize: normalize(15) },
+  actions: { flexDirection: "row", gap: rs(12) },
+  actionBtn: { padding: rs(2) },
 });
+
+

@@ -9,7 +9,6 @@ import {
   Modal,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -22,6 +21,7 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
+import { rs, normalize } from "@/lib/responsive";
 
 const WEEK_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = [
@@ -159,11 +159,11 @@ export default function BookingScreen() {
       <View
         style={[
           styles.header,
-          { paddingTop: insets.top + 12, borderBottomColor: colors.border },
+          { paddingTop: insets.top + rs(12), borderBottomColor: colors.border },
         ]}
       >
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
-          <Feather name="arrow-left" size={22} color={colors.text} />
+          <Feather name="arrow-left" size={rs(22)} color={colors.text} />
         </Pressable>
         <Text
           style={[
@@ -173,7 +173,7 @@ export default function BookingScreen() {
         >
           {t("confirmBooking")}
         </Text>
-        <View style={{ width: 36 }} />
+        <View style={{ width: rs(36) }} />
       </View>
 
       <ScrollView
@@ -193,7 +193,7 @@ export default function BookingScreen() {
                 { backgroundColor: colors.accent + "18" },
               ]}
             >
-              <Feather name="scissors" size={22} color={colors.accent} />
+              <Feather name="scissors" size={rs(22)} color={colors.accent} />
             </View>
             <View style={{ flex: 1 }}>
               <Text
@@ -310,7 +310,7 @@ export default function BookingScreen() {
           {apptLoading ? (
             <ActivityIndicator
               color={colors.primary}
-              style={{ marginVertical: 16 }}
+              style={{ marginVertical: rs(16) }}
             />
           ) : (
             <TimeSlotPicker
@@ -329,7 +329,7 @@ export default function BookingScreen() {
           styles.footer,
           {
             borderTopColor: colors.border,
-            paddingBottom: insets.bottom + 12,
+            paddingBottom: insets.bottom + rs(55),
             backgroundColor: colors.background,
           },
         ]}
@@ -390,7 +390,7 @@ export default function BookingScreen() {
               <View
                 style={[
                   styles.modalInfo,
-                  { backgroundColor: colors.background, borderRadius: 12 },
+                  { backgroundColor: colors.background, borderRadius: rs(12) },
                 ]}
               >
                 <Row
@@ -487,7 +487,7 @@ function Row({
     <View style={styles.infoRow}>
       <Feather
         name={icon as keyof typeof Feather.glyphMap}
-        size={16}
+        size={rs(16)}
         color={colors.mutedForeground}
       />
       <Text
@@ -510,3 +510,4 @@ function Row({
     </View>
   );
 }
+

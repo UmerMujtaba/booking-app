@@ -1,3 +1,4 @@
+/*
 import * as FileSystem from 'expo-file-system/legacy';
 
 // Replace these with your actual Cloudinary credentials
@@ -33,3 +34,5 @@ export async function uploadToCloudinary(uri: string): Promise<string> {
     throw error;
   }
 }
+*/
+

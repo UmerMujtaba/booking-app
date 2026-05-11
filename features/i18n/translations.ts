@@ -77,6 +77,7 @@ updating : 'Updating...',
     english: 'English',
     urdu: 'اردو',
     settings: 'Settings',
+    updatePhone: 'Update Phone Number',
     appVersion: 'App Version',
 
     // Owner
@@ -200,6 +201,7 @@ updating : 'اپ ڈیٹ ہو رہا ہے...',
     english: 'English',
     urdu: 'اردو',
     settings: 'ترتیبات',
+    updatePhone: 'فون نمبر اپ ڈیٹ کریں',
     appVersion: 'ایپ ورژن',
 
     // Owner

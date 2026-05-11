@@ -20,6 +20,7 @@ import { Appointment, Business } from '@/features/booking/types';
 import { supabase } from '@/lib/supabase';
 import { useColors } from '@/hooks/useColors';
 import { useTranslation } from '@/hooks/useTranslation';
+import { rs, normalize } from '@/lib/responsive';
 
 const WEEK_DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -95,7 +96,7 @@ export default function OwnerAgendaScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { paddingTop: topPad + 12, borderBottomColor: colors.border, backgroundColor: colors.background }]}>
+      <View style={[styles.header, { paddingTop: topPad + rs(12), borderBottomColor: colors.border, backgroundColor: colors.background }]}>
         <View style={styles.headerTop}>
           <View>
             <Text style={[styles.greeting, { color: colors.mutedForeground, fontFamily: 'Inter_400Regular' }]}>
@@ -107,7 +108,7 @@ export default function OwnerAgendaScreen() {
           </View>
           {totalEarnings > 0 && (
             <View style={[styles.earningsBadge, { backgroundColor: colors.success + '18' }]}>
-              <Feather name="trending-up" size={14} color={colors.success} />
+              <Feather name="trending-up" size={rs(14)} color={colors.success} />
               <Text style={[styles.earningsText, { color: colors.success, fontFamily: 'Inter_600SemiBold' }]}>
                 ${totalEarnings.toFixed(0)}
               </Text>
@@ -146,7 +147,7 @@ export default function OwnerAgendaScreen() {
 
       {!business ? (
         <View style={styles.center}>
-          <Feather name="briefcase" size={40} color={colors.mutedForeground} />
+          <Feather name="briefcase" size={rs(40)} color={colors.mutedForeground} />
           <Text style={[styles.emptyTitle, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
             Business setup pending
           </Text>
@@ -187,7 +188,7 @@ export default function OwnerAgendaScreen() {
           )}
           ListEmptyComponent={
             <View style={styles.center}>
-              <Feather name="coffee" size={36} color={colors.mutedForeground} />
+              <Feather name="coffee" size={rs(36)} color={colors.mutedForeground} />
               <Text style={[styles.emptyTitle, { color: colors.text, fontFamily: 'Inter_600SemiBold' }]}>
                 {t('noAppointmentsToday')}
               </Text>
@@ -204,19 +205,20 @@ export default function OwnerAgendaScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { paddingBottom: 8, borderBottomWidth: 1 },
-  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 14 },
-  greeting: { fontSize: 13 },
-  headerTitle: { fontSize: 24, marginTop: 2 },
-  earningsBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20 },
-  earningsText: { fontSize: 15 },
-  weekRow: { paddingHorizontal: 16, gap: 4 },
-  dayBtn: { width: 48, alignItems: 'center', paddingVertical: 8, borderRadius: 12, gap: 2 },
-  dayName: { fontSize: 11 },
-  dayNum: { fontSize: 18 },
-  list: { padding: 16, paddingBottom: 100 },
-  dayLabel: { fontSize: 15, marginBottom: 14 },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 12, marginTop: 60 },
-  emptyTitle: { fontSize: 18 },
-  emptyText: { fontSize: 15, textAlign: 'center' },
+  header: { paddingBottom: rs(8), borderBottomWidth: 1 },
+  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: rs(20), marginBottom: rs(14) },
+  greeting: { fontSize: normalize(13) },
+  headerTitle: { fontSize: normalize(24), marginTop: rs(2) },
+  earningsBadge: { flexDirection: 'row', alignItems: 'center', gap: rs(4), paddingHorizontal: rs(12), paddingVertical: rs(7), borderRadius: rs(20) },
+  earningsText: { fontSize: normalize(15) },
+  weekRow: { paddingHorizontal: rs(16), gap: rs(4) },
+  dayBtn: { width: rs(48), alignItems: 'center', paddingVertical: rs(8), borderRadius: rs(12), gap: rs(2) },
+  dayName: { fontSize: normalize(11) },
+  dayNum: { fontSize: normalize(18) },
+  list: { padding: rs(16), paddingBottom: rs(100) },
+  dayLabel: { fontSize: normalize(15), marginBottom: rs(14) },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: rs(32), gap: rs(12), marginTop: rs(60) },
+  emptyTitle: { fontSize: normalize(18) },
+  emptyText: { fontSize: normalize(15), textAlign: 'center' },
 });
+
