@@ -192,7 +192,10 @@ export default function RegisterScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.container,
-          { paddingTop: insets.top + rs(20), paddingBottom: insets.bottom + rs(24) },
+          {
+            paddingTop: insets.top + rs(20),
+            paddingBottom: insets.bottom + rs(24),
+          },
         ]}
         keyboardShouldPersistTaps="handled"
       >
@@ -251,7 +254,11 @@ export default function RegisterScreen() {
                 { backgroundColor: colors.card, borderColor: colors.border },
               ]}
             >
-              <Feather name="user" size={rs(18)} color={colors.mutedForeground} />
+              <Feather
+                name="user"
+                size={rs(18)}
+                color={colors.mutedForeground}
+              />
               <TextInput
                 style={[
                   styles.input,
@@ -281,7 +288,11 @@ export default function RegisterScreen() {
                 { backgroundColor: colors.card, borderColor: colors.border },
               ]}
             >
-              <Feather name="mail" size={rs(18)} color={colors.mutedForeground} />
+              <Feather
+                name="mail"
+                size={rs(18)}
+                color={colors.mutedForeground}
+              />
               <TextInput
                 style={[
                   styles.input,
@@ -313,7 +324,11 @@ export default function RegisterScreen() {
                 { backgroundColor: colors.card, borderColor: colors.border },
               ]}
             >
-              <Feather name="lock" size={rs(18)} color={colors.mutedForeground} />
+              <Feather
+                name="lock"
+                size={rs(18)}
+                color={colors.mutedForeground}
+              />
               <TextInput
                 style={[
                   styles.input,
@@ -398,7 +413,11 @@ const styles = StyleSheet.create({
     marginBottom: rs(8),
   },
   confirmTitle: { fontSize: normalize(26), textAlign: "center" },
-  confirmBody: { fontSize: normalize(16), textAlign: "center", lineHeight: rs(24) },
+  confirmBody: {
+    fontSize: normalize(16),
+    textAlign: "center",
+    lineHeight: rs(24),
+  },
   tipBox: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -421,7 +440,7 @@ const styles = StyleSheet.create({
   title: { fontSize: normalize(28) },
   subtitle: { fontSize: normalize(16) },
   form: { gap: rs(18), marginBottom: rs(32) },
-  fieldWrap: { gap: rs(8) },
+  fieldWrap: { gap: rs(8), marginTop: rs(4) },
   label: { fontSize: normalize(14) },
   roleRow: { flexDirection: "row", gap: rs(10) },
   roleOption: {
@@ -441,10 +460,10 @@ const styles = StyleSheet.create({
     borderRadius: rs(12),
     borderWidth: 1,
     paddingHorizontal: rs(14),
-    paddingVertical: rs(14),
+    paddingVertical: rs(4),
     gap: rs(10),
   },
-  input: { flex: 1, fontSize: normalize(16) },
+  input: { flex: 1, fontSize: normalize(14) },
   signUpBtn: {
     paddingVertical: rs(16),
     borderRadius: rs(14),

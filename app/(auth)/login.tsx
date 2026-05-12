@@ -18,8 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
-import { supabase } from "@/lib/supabase";
-import { rs, normalize } from "@/lib/responsive";
+import { normalize, rs } from "@/lib/responsive";
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
@@ -80,7 +79,10 @@ export default function LoginScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.container,
-          { paddingTop: insets.top + rs(60), paddingBottom: insets.bottom + rs(24) },
+          {
+            paddingTop: insets.top + rs(60),
+            paddingBottom: insets.bottom + rs(24),
+          },
         ]}
         keyboardShouldPersistTaps="handled"
       >
@@ -127,7 +129,11 @@ export default function LoginScreen() {
                 { backgroundColor: colors.card, borderColor: colors.border },
               ]}
             >
-              <Feather name="mail" size={rs(18)} color={colors.mutedForeground} />
+              <Feather
+                name="mail"
+                size={rs(18)}
+                color={colors.mutedForeground}
+              />
               <TextInput
                 style={[
                   styles.input,
@@ -159,7 +165,11 @@ export default function LoginScreen() {
                 { backgroundColor: colors.card, borderColor: colors.border },
               ]}
             >
-              <Feather name="lock" size={rs(18)} color={colors.mutedForeground} />
+              <Feather
+                name="lock"
+                size={rs(18)}
+                color={colors.mutedForeground}
+              />
               <TextInput
                 style={[
                   styles.input,
@@ -184,7 +194,7 @@ export default function LoginScreen() {
               <Pressable onPress={() => router.push("/forgotPassword")}>
                 <Text
                   style={[
-                    styles.footerLink,
+                    styles.footerPasswordLink,
                     {
                       color: colors.primary,
                       fontFamily: "Inter_600SemiBold",
@@ -297,10 +307,10 @@ const styles = StyleSheet.create({
     borderRadius: rs(12),
     borderWidth: 1,
     paddingHorizontal: rs(14),
-    paddingVertical: rs(14),
+    paddingVertical: rs(4),
     gap: rs(10),
   },
-  input: { flex: 1, fontSize: normalize(16) },
+  input: { flex: 1, fontSize: normalize(14) },
   signInBtn: {
     paddingVertical: rs(16),
     borderRadius: rs(14),
@@ -317,6 +327,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  footerText: { fontSize: normalize(15) },
-  footerLink: { fontSize: normalize(15) },
+  footerText: { fontSize: normalize(14) },
+  footerLink: { fontSize: normalize(14) },
+  footerPasswordLink: { fontSize: normalize(13) },
 });
