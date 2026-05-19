@@ -18,7 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
-import { normalize, rs } from "@/lib/responsive";
+import { isIos, normalize, rs } from "@/lib/responsive";
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     borderRadius: rs(12),
     borderWidth: 1,
     paddingHorizontal: rs(14),
-    paddingVertical: rs(4),
+    paddingVertical: isIos() ? rs(14) : rs(4),
     gap: rs(10),
   },
   input: { flex: 1, fontSize: normalize(14) },

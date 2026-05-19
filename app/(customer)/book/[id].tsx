@@ -11,12 +11,12 @@ import {
   ScrollView,
   Text,
   View,
+  StyleSheet,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TimeSlotPicker } from "@/components/TimeSlotPicker";
 import { Appointment, Service } from "@/features/booking/types";
-import { styles } from "./styles";
 import { useAuth } from "@/features/auth/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useColors } from "@/hooks/useColors";
@@ -115,6 +115,37 @@ export default function BookingScreen() {
   const { mutate: createBooking, isPending: booking } = useMutation({
     mutationFn: async () => {
       if (!selectedSlot || !service || !user) throw new Error("Missing data");
+
+      // Verify slot availability again
+      const startOfDay = new Date(selectedSlot);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(selectedSlot);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const { data: existingAppts } = await supabase
+        .from("appointments")
+        .select("*, service:services(duration_minutes)")
+        .eq("business_id", businessId)
+        .gte("start_time", startOfDay.toISOString())
+        .lte("start_time", endOfDay.toISOString())
+        .neq("status", "cancelled");
+
+      if (existingAppts) {
+        const slotStart = selectedSlot.getTime();
+        const durationMins = service.duration_minutes ?? 30;
+        const slotEnd = slotStart + durationMins * 60 * 1000;
+        
+        for (const appt of existingAppts) {
+           // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           const apptDur = ((appt.service as any)?.duration_minutes ?? 30) * 60 * 1000;
+           const apptStart = new Date(appt.start_time).getTime();
+           const apptEnd = apptStart + apptDur;
+           if (slotStart < apptEnd && slotEnd > apptStart) {
+               throw new Error("This time slot has just been booked by someone else.");
+           }
+        }
+      }
+
       const { error } = await supabase.from("appointments").insert({
         business_id: businessId,
         customer_id: user.id,
@@ -131,7 +162,7 @@ export default function BookingScreen() {
       setShowConfirm(false);
       Alert.alert(
         t("bookingConfirmed"),
-        `Your booking for ${service?.name} at ${selectedSlot?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} is confirmed!`,
+        `Your booking for ${service?.name} at ${selectedSlot?.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })} is confirmed!`,
         [
           {
             text: "OK",
@@ -143,6 +174,8 @@ export default function BookingScreen() {
     onError: (err: unknown) => {
       const message = err instanceof Error ? err.message : "Booking failed";
       Alert.alert(t("bookingFailed"), message);
+      // Also refresh the data to update available slots
+      queryClient.invalidateQueries({ queryKey: ["appointments-for-date"] });
     },
   });
 
@@ -355,7 +388,7 @@ export default function BookingScreen() {
             ]}
           >
             {selectedSlot
-              ? `${t("confirmBooking")} at ${selectedSlot.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+              ? `${t("confirmBooking")} at ${selectedSlot.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })}`
               : t("selectTime")}
           </Text>
         </Pressable>
@@ -412,9 +445,10 @@ export default function BookingScreen() {
                 <Row
                   icon="clock"
                   label="Time"
-                  value={selectedSlot.toLocaleTimeString([], {
-                    hour: "2-digit",
+                  value={selectedSlot.toLocaleTimeString("en-US", {
+                    hour: "numeric",
                     minute: "2-digit",
+                    hour12: true,
                   })}
                   colors={colors}
                 />
@@ -511,3 +545,94 @@ function Row({
   );
 }
 
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  center: { flex: 1, alignItems: "center", justifyContent: "center" },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: rs(16),
+    paddingBottom: rs(14),
+    borderBottomWidth: 1,
+  },
+  backBtn: { width: rs(36) },
+  headerTitle: { fontSize: normalize(16) },
+  scroll: { padding: rs(16), paddingBottom: rs(32), gap: rs(24) },
+  serviceInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: rs(16),
+    borderRadius: rs(14),
+    borderWidth: 1,
+    gap: rs(14),
+  },
+  serviceIcon: {
+    width: rs(48),
+    height: rs(48),
+    borderRadius: rs(12),
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  serviceName: { fontSize: normalize(14) },
+  serviceMeta: { fontSize: normalize(12), marginTop: rs(3) },
+  section: { gap: rs(14) },
+  sectionTitle: { fontSize: normalize(14) },
+  dateRow: { gap: rs(8) },
+  dateBtn: {
+    width: rs(64),
+    alignItems: "center",
+    paddingVertical: rs(12),
+    borderRadius: rs(12),
+    borderWidth: 1,
+    gap: rs(2),
+  },
+  dateDayName: { fontSize: normalize(11) },
+  dateNum: { fontSize: normalize(16) },
+  dateMonth: { fontSize: normalize(11) },
+  footer: { padding: rs(16), borderTopWidth: 1 },
+  confirmBtn: {
+    paddingVertical: rs(16),
+    borderRadius: rs(14),
+    alignItems: "center",
+  },
+  confirmText: { fontSize: normalize(13) },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+  },
+  modalSheet: {
+    borderTopLeftRadius: rs(24),
+    borderTopRightRadius: rs(24),
+    padding: rs(24),
+    gap: rs(20),
+  },
+  modalHandle: {
+    width: rs(40),
+    height: rs(4),
+    borderRadius: rs(2),
+    alignSelf: "center",
+  },
+  modalTitle: { fontSize: normalize(22), textAlign: "center" },
+  modalInfo: { padding: rs(16), gap: rs(14) },
+  infoRow: { flexDirection: "row", alignItems: "center", gap: rs(10) },
+  infoLabel: { fontSize: normalize(14), width: rs(60) },
+  infoValue: { fontSize: normalize(15), flex: 1, textAlign: "right" },
+  modalBtns: { flexDirection: "row", gap: rs(12) },
+  modalCancelBtn: {
+    flex: 1,
+    paddingVertical: rs(15),
+    borderRadius: rs(12),
+    alignItems: "center",
+    borderWidth: 1,
+  },
+  modalCancelText: { fontSize: normalize(16) },
+  modalConfirmBtn: {
+    flex: 1,
+    paddingVertical: rs(15),
+    borderRadius: rs(12),
+    alignItems: "center",
+  },
+  modalConfirmText: { color: "#fff", fontSize: normalize(16) },
+});

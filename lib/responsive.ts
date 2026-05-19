@@ -48,3 +48,5 @@ export const moderateScale = (size: number, factor = 0.5) => size + (rs(size) - 
  */
 export const verticalScale = (size: number) => (SCREEN_HEIGHT / guidelineBaseHeight) * size;
 
+
+export const isIos = () => Platform.OS === "ios";

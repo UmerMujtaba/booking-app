@@ -11,13 +11,14 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { styles } from "./styles";
-
 import { ServiceCard } from "@/components/ServiceCard";
 import { Business, Service } from "@/features/booking/types";
+// import { useFocusEffect } from "@react-navigation/native";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
+import { normalize, rs } from "@/lib/responsive";
 import { supabase } from "@/lib/supabase";
+import { StyleSheet } from "react-native";
 
 async function fetchBusiness(id: string): Promise<Business> {
   const { data, error } = await supabase
@@ -45,6 +46,10 @@ export default function BusinessDetailScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+
+  // useFocusEffect(() => {
+  //   setSelectedService(null);
+  // });
 
   const { data: business, isLoading: bizLoading } = useQuery({
     queryKey: ["business", id],
@@ -249,3 +254,65 @@ export default function BusinessDetailScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  center: { flex: 1, alignItems: "center", justifyContent: "center" },
+  heroImage: { width: "100%", height: rs(260), resizeMode: "cover" },
+  heroPlaceholder: {
+    width: "100%",
+    height: rs(260),
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  content: { padding: rs(20) },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: rs(16),
+  },
+  businessName: { fontSize: normalize(22), marginBottom: rs(8) },
+  catBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: rs(12),
+    paddingVertical: rs(5),
+    borderRadius: rs(20),
+  },
+  catText: { fontSize: normalize(10) },
+  section: { marginBottom: rs(24), gap: rs(12) },
+  sectionTitle: { fontSize: normalize(15) },
+  bio: { fontSize: normalize(12), lineHeight: rs(18) },
+  emptyServices: { alignItems: "center", gap: rs(8), paddingVertical: rs(24) },
+  emptyText: { fontSize: normalize(14) },
+  backBtn: {
+    position: "absolute",
+    left: rs(16),
+    width: rs(40),
+    height: rs(40),
+    borderRadius: rs(20),
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: rs(4),
+    elevation: 4,
+  },
+  bookBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: rs(20),
+    paddingTop: rs(14),
+    borderTopWidth: 1,
+    gap: rs(12),
+  },
+  bookBarLeft: { flex: 1, gap: rs(2) },
+  bookBarService: { fontSize: normalize(15) },
+  bookBarPrice: { fontSize: normalize(13) },
+  bookBtn: {
+    paddingHorizontal: rs(24),
+    paddingVertical: rs(14),
+    borderRadius: rs(12),
+  },
+  bookBtnText: { color: "#fff", fontSize: normalize(13) },
+});

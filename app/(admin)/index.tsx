@@ -9,13 +9,13 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Image } from "expo-image";
-import { styles } from "./styles";
 import { logActivity } from "@/features/audit/logging";
 import { useAuth } from "@/features/auth/AuthContext";
 import {
@@ -530,7 +530,10 @@ export default function AdminPanelScreen() {
                   </Text>
                   <View style={styles.cnicRow}>
                     <Pressable
-                      onPress={() => setPreviewImage(item.cnic_front_image)}
+                      onPress={() =>
+                        item.cnic_front_image &&
+                        setPreviewImage(item.cnic_front_image)
+                      }
                     >
                       <Image
                         source={{ uri: item.cnic_front_image }}
@@ -539,7 +542,10 @@ export default function AdminPanelScreen() {
                       />
                     </Pressable>
                     <Pressable
-                      onPress={() => setPreviewImage(item.cnic_back_image)}
+                      onPress={() =>
+                        item.cnic_back_image &&
+                        setPreviewImage(item.cnic_back_image)
+                      }
                     >
                       <Image
                         source={{ uri: item.cnic_back_image }}
@@ -736,6 +742,7 @@ export default function AdminPanelScreen() {
                     <View style={styles.cnicRow}>
                       <Pressable
                         onPress={() =>
+                          item.proposed_cnic_front_image &&
                           setPreviewImage(item.proposed_cnic_front_image)
                         }
                       >
@@ -747,6 +754,7 @@ export default function AdminPanelScreen() {
                       </Pressable>
                       <Pressable
                         onPress={() =>
+                          item.proposed_cnic_back_image &&
                           setPreviewImage(item.proposed_cnic_back_image)
                         }
                       >
@@ -842,3 +850,88 @@ export default function AdminPanelScreen() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  header: { paddingHorizontal: 16, marginBottom: 12 },
+  title: { fontSize: 26 },
+  subtitle: { marginTop: 4, fontSize: 14 },
+  section: {
+    marginHorizontal: 16,
+    marginTop: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 14,
+    gap: 10,
+  },
+  signOutBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    paddingVertical: 15,
+    borderRadius: 14,
+    borderWidth: 1,
+    marginTop: 14,
+    marginHorizontal: 16,
+  },
+  signOutText: { fontSize: 16 },
+  sectionTitle: { fontSize: 17 },
+  ownerRow: { gap: 8 },
+  ownerChip: {
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  bioInput: { minHeight: 70, textAlignVertical: "top" },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+  },
+  rowTitle: { fontSize: 15 },
+  actionBtn: { borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8 },
+  actionText: { color: "#fff", fontFamily: "Inter_600SemiBold" },
+  inlineActions: { flexDirection: "row", gap: 8 },
+  smallBtn: {
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 1,
+  },
+  logRow: { flexDirection: "row", gap: 8, alignItems: "center" },
+  detailBox: {
+    marginTop: 8,
+    gap: 4,
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: "rgba(0,0,0,0.02)",
+  },
+  detailLabel: { fontSize: 12, opacity: 0.6 },
+  detailText: { fontSize: 14, marginBottom: 4 },
+  cnicRow: { flexDirection: "row", gap: 8, marginTop: 4 },
+  cnicImage: { width: 100, height: 60, borderRadius: 4 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullImage: { width: "90%", height: "70%" },
+  closeBtn: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    padding: 10,
+    zIndex: 10,
+  },
+});

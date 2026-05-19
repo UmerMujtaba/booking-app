@@ -6,7 +6,7 @@ import { Alert } from "react-native";
 
 import { supabase } from "@/lib/supabase";
 import {
-  registerForPushNotificationsAsync,
+  // registerForPushNotificationsAsync,
   savePushToken,
 } from "@/lib/notifications";
 
@@ -156,11 +156,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         // Register for push notifications
-        registerForPushNotificationsAsync().then((token) => {
-          if (token && s.user) {
-            savePushToken(s.user.id, token);
-          }
-        });
+        // registerForPushNotificationsAsync().then((token) => {
+        //   if (token && s.user) {
+        //     savePushToken(s.user.id, token);
+        //   }
+        // });
       } else if (event === "SIGNED_OUT") {
         setProfile(null);
         setNeedsEmailConfirm(false);

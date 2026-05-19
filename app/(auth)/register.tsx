@@ -19,7 +19,7 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { UserRole } from "@/features/auth/types";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
-import { rs, normalize } from "@/lib/responsive";
+import { rs, normalize, isIos } from "@/lib/responsive";
 
 export default function RegisterScreen() {
   const { signUp, needsEmailConfirm } = useAuth();
@@ -460,7 +460,8 @@ const styles = StyleSheet.create({
     borderRadius: rs(12),
     borderWidth: 1,
     paddingHorizontal: rs(14),
-    paddingVertical: rs(4),
+    paddingVertical: isIos() ? rs(14) : rs(4),
+
     gap: rs(10),
   },
   input: { flex: 1, fontSize: normalize(14) },

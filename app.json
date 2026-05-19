@@ -8,11 +8,6 @@
     "scheme": "booking-app",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/images/icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0F172A"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.umermujtaba.bookingapp",
@@ -38,7 +33,15 @@
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#2596be"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

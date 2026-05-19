@@ -21,7 +21,7 @@ import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/features/auth/AuthContext";
 import { getGreeting } from "@/constants";
-import { rs, normalize } from "@/lib/responsive";
+import { rs, normalize, isIos } from "@/lib/responsive";
 import { router } from "expo-router";
 
 const CATEGORIES = [
@@ -322,7 +322,11 @@ export default function DiscoverScreen() {
                     {loc}
                   </Text>
                   {selectedLocation === loc && (
-                    <Feather name="check" size={rs(18)} color={colors.primary} />
+                    <Feather
+                      name="check"
+                      size={rs(18)}
+                      color={colors.primary}
+                    />
                   )}
                 </Pressable>
               ))}
@@ -337,7 +341,11 @@ export default function DiscoverScreen() {
         </View>
       ) : error ? (
         <View style={styles.center}>
-          <Feather name="wifi-off" size={rs(36)} color={colors.mutedForeground} />
+          <Feather
+            name="wifi-off"
+            size={rs(36)}
+            color={colors.mutedForeground}
+          />
           <Text
             style={[
               styles.emptyText,
@@ -375,10 +383,8 @@ export default function DiscoverScreen() {
           }
           ListEmptyComponent={
             <View style={styles.center}>
-                name="map-pin"
-                size={rs(36)}
-                color={colors.mutedForeground}
-              />
+              name="map-pin" size={rs(36)}
+              color={colors.mutedForeground}
               <Text
                 style={[
                   styles.emptyTitle,
@@ -434,7 +440,8 @@ const styles = StyleSheet.create({
     borderRadius: rs(12),
     borderWidth: 1,
     paddingHorizontal: rs(14),
-    paddingVertical: rs(2),
+    paddingVertical: isIos() ? rs(14) : rs(4),
+
     gap: rs(10),
     marginBottom: rs(14),
   },
@@ -445,7 +452,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: rs(20),
   },
   categoryScroll: { flexGrow: 0 },
-  categoryContent: { paddingHorizontal: rs(16), gap: rs(8), flexDirection: "row" },
+  categoryContent: {
+    paddingHorizontal: rs(16),
+    gap: rs(8),
+    flexDirection: "row",
+  },
   categoryChip: {
     paddingHorizontal: rs(14),
     paddingVertical: rs(4),
@@ -496,7 +507,11 @@ const styles = StyleSheet.create({
   },
   locationText: { fontSize: normalize(16) },
   list: { paddingTop: rs(16), paddingBottom: rs(100) },
-  sectionTitle: { fontSize: normalize(16), marginHorizontal: rs(16), marginBottom: rs(12) },
+  sectionTitle: {
+    fontSize: normalize(16),
+    marginHorizontal: rs(16),
+    marginBottom: rs(12),
+  },
   center: {
     flex: 1,
     alignItems: "center",
@@ -507,7 +522,10 @@ const styles = StyleSheet.create({
   },
   emptyTitle: { fontSize: normalize(18) },
   emptyText: { fontSize: normalize(15), textAlign: "center" },
-  retryBtn: { paddingHorizontal: rs(24), paddingVertical: rs(12), borderRadius: rs(10) },
+  retryBtn: {
+    paddingHorizontal: rs(24),
+    paddingVertical: rs(12),
+    borderRadius: rs(10),
+  },
   retryText: { color: "#fff", fontSize: normalize(15) },
 });
-

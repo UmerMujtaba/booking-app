@@ -9,6 +9,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -24,7 +25,7 @@ import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/lib/supabase";
 import { uploadToSupabase } from "@/lib/supabase-storage";
-import { styles } from "./styles";
+
 import { Image } from "expo-image";
 import { rs, normalize } from "@/lib/responsive";
 
@@ -266,7 +267,10 @@ export default function OwnerProfileScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.container,
-          { paddingTop: topPad + rs(12), paddingBottom: insets.bottom + rs(60) },
+          {
+            paddingTop: topPad + rs(12),
+            paddingBottom: insets.bottom + rs(60),
+          },
         ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -274,7 +278,11 @@ export default function OwnerProfileScreen() {
         <Text
           style={[
             styles.title,
-            { color: colors.text, fontFamily: "Inter_700Bold", fontSize: normalize(24) },
+            {
+              color: colors.text,
+              fontFamily: "Inter_700Bold",
+              fontSize: normalize(24),
+            },
           ]}
         >
           {t("myBusiness")}
@@ -282,7 +290,12 @@ export default function OwnerProfileScreen() {
 
         <View style={styles.ownerCard}>
           <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-            <Text style={[styles.initials, { fontFamily: "Inter_700Bold", fontSize: normalize(18) }]}>
+            <Text
+              style={[
+                styles.initials,
+                { fontFamily: "Inter_700Bold", fontSize: normalize(18) },
+              ]}
+            >
               {profile?.full_name
                 ?.split(" ")
                 .map((n) => n[0])
@@ -295,7 +308,11 @@ export default function OwnerProfileScreen() {
             <Text
               style={[
                 styles.ownerName,
-                { color: colors.text, fontFamily: "Inter_600SemiBold", fontSize: normalize(16) },
+                {
+                  color: colors.text,
+                  fontFamily: "Inter_600SemiBold",
+                  fontSize: normalize(16),
+                },
               ]}
             >
               {profile?.full_name}
@@ -309,7 +326,11 @@ export default function OwnerProfileScreen() {
               <Text
                 style={[
                   styles.roleText,
-                  { color: colors.accent, fontFamily: "Inter_500Medium", fontSize: normalize(12) },
+                  {
+                    color: colors.accent,
+                    fontFamily: "Inter_500Medium",
+                    fontSize: normalize(12),
+                  },
                 ]}
               >
                 {t("owner")}
@@ -321,7 +342,7 @@ export default function OwnerProfileScreen() {
                 {
                   color: colors.mutedForeground,
                   fontFamily: "Inter_400Regular",
-                  fontSize: normalize(14)
+                  fontSize: normalize(14),
                 },
               ]}
             >
@@ -339,7 +360,11 @@ export default function OwnerProfileScreen() {
           <Text
             style={[
               styles.cardTitle,
-              { color: colors.text, fontFamily: "Inter_700Bold", fontSize: normalize(18) },
+              {
+                color: colors.text,
+                fontFamily: "Inter_700Bold",
+                fontSize: normalize(18),
+              },
             ]}
           >
             {business ? "Business Profile" : "Business Registration"}
@@ -358,43 +383,81 @@ export default function OwnerProfileScreen() {
                 ]}
               >
                 <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: rs(8) }}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: rs(8),
+                  }}
                 >
                   <Feather name="clock" size={rs(18)} color={colors.primary} />
                   <Text
                     style={{
                       color: colors.primary,
                       fontFamily: "Inter_600SemiBold",
-                      fontSize: normalize(14)
+                      fontSize: normalize(14),
                     }}
                   >
                     Submitted for Approval
                   </Text>
                 </View>
-                <Text style={{ color: colors.mutedForeground, marginTop: rs(4), fontSize: normalize(14) }}>
+                <Text
+                  style={{
+                    color: colors.mutedForeground,
+                    marginTop: rs(4),
+                    fontSize: normalize(14),
+                  }}
+                >
                   Your request is being reviewed by an admin. You cannot make
                   changes until it is approved or rejected.
                 </Text>
               </View>
 
               <View style={styles.detailBox}>
-                <Text style={[styles.detailLabel, {fontSize: normalize(12)}]}>Proposed Name</Text>
-                <Text style={[styles.detailText, { color: colors.text, fontSize: normalize(14) }]}>
+                <Text style={[styles.detailLabel, { fontSize: normalize(12) }]}>
+                  Proposed Name
+                </Text>
+                <Text
+                  style={[
+                    styles.detailText,
+                    { color: colors.text, fontSize: normalize(14) },
+                  ]}
+                >
                   {latestUpdateRequest.proposed_name}
                 </Text>
 
-                <Text style={[styles.detailLabel, {fontSize: normalize(12)}]}>Proposed Category</Text>
-                <Text style={[styles.detailText, { color: colors.text, fontSize: normalize(14) }]}>
+                <Text style={[styles.detailLabel, { fontSize: normalize(12) }]}>
+                  Proposed Category
+                </Text>
+                <Text
+                  style={[
+                    styles.detailText,
+                    { color: colors.text, fontSize: normalize(14) },
+                  ]}
+                >
                   {latestUpdateRequest.proposed_category}
                 </Text>
 
-                <Text style={[styles.detailLabel, {fontSize: normalize(12)}]}>Proposed Address</Text>
-                <Text style={[styles.detailText, { color: colors.text, fontSize: normalize(14) }]}>
+                <Text style={[styles.detailLabel, { fontSize: normalize(12) }]}>
+                  Proposed Address
+                </Text>
+                <Text
+                  style={[
+                    styles.detailText,
+                    { color: colors.text, fontSize: normalize(14) },
+                  ]}
+                >
                   {latestUpdateRequest.proposed_address}
                 </Text>
 
-                <Text style={[styles.detailLabel, {fontSize: normalize(12)}]}>Operating Hours</Text>
-                <Text style={[styles.detailText, { color: colors.text, fontSize: normalize(14) }]}>
+                <Text style={[styles.detailLabel, { fontSize: normalize(12) }]}>
+                  Operating Hours
+                </Text>
+                <Text
+                  style={[
+                    styles.detailText,
+                    { color: colors.text, fontSize: normalize(14) },
+                  ]}
+                >
                   {latestUpdateRequest.proposed_opening_time?.slice(0, 5)} -{" "}
                   {latestUpdateRequest.proposed_closing_time?.slice(0, 5)}
                 </Text>
@@ -413,7 +476,11 @@ export default function OwnerProfileScreen() {
                 ]}
               >
                 <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: rs(8) }}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: rs(8),
+                  }}
                 >
                   <Feather
                     name="alert-circle"
@@ -424,7 +491,7 @@ export default function OwnerProfileScreen() {
                     style={{
                       color: colors.destructive,
                       fontFamily: "Inter_600SemiBold",
-                      fontSize: normalize(14)
+                      fontSize: normalize(14),
                     }}
                   >
                     Request Rejected
@@ -435,12 +502,18 @@ export default function OwnerProfileScreen() {
                     color: colors.text,
                     marginTop: rs(8),
                     fontFamily: "Inter_500Medium",
-                    fontSize: normalize(14)
+                    fontSize: normalize(14),
                   }}
                 >
                   Reason: {latestUpdateRequest.rejection_reason}
                 </Text>
-                <Text style={{ color: colors.mutedForeground, marginTop: rs(4), fontSize: normalize(14) }}>
+                <Text
+                  style={{
+                    color: colors.mutedForeground,
+                    marginTop: rs(4),
+                    fontSize: normalize(14),
+                  }}
+                >
                   Please correct the issues and submit a new request.
                 </Text>
 
@@ -463,7 +536,12 @@ export default function OwnerProfileScreen() {
           ) : (
             <>
               {!business && (
-                <Text style={{ color: colors.mutedForeground, fontSize: normalize(14) }}>
+                <Text
+                  style={{
+                    color: colors.mutedForeground,
+                    fontSize: normalize(14),
+                  }}
+                >
                   Fill in the details below to register your business.
                 </Text>
               )}
@@ -472,7 +550,11 @@ export default function OwnerProfileScreen() {
                 <Text
                   style={[
                     styles.label,
-                    { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
+                    {
+                      color: colors.text,
+                      fontFamily: "Inter_500Medium",
+                      fontSize: normalize(14),
+                    },
                   ]}
                 >
                   {t("businessName")}
@@ -494,7 +576,11 @@ export default function OwnerProfileScreen() {
                   <TextInput
                     style={[
                       styles.input,
-                      { color: colors.text, fontFamily: "Inter_400Regular", fontSize: normalize(14) },
+                      {
+                        color: colors.text,
+                        fontFamily: "Inter_400Regular",
+                        fontSize: normalize(14),
+                      },
                     ]}
                     value={form.name}
                     onChangeText={(v) => setForm((f) => ({ ...f, name: v }))}
@@ -508,7 +594,11 @@ export default function OwnerProfileScreen() {
                 <Text
                   style={[
                     styles.label,
-                    { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
+                    {
+                      color: colors.text,
+                      fontFamily: "Inter_500Medium",
+                      fontSize: normalize(14),
+                    },
                   ]}
                 >
                   {t("category")}
@@ -545,7 +635,7 @@ export default function OwnerProfileScreen() {
                               form.category === cat
                                 ? "Inter_600SemiBold"
                                 : "Inter_400Regular",
-                            fontSize: normalize(14)
+                            fontSize: normalize(14),
                           },
                         ]}
                       >
@@ -560,7 +650,11 @@ export default function OwnerProfileScreen() {
                 <Text
                   style={[
                     styles.label,
-                    { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
+                    {
+                      color: colors.text,
+                      fontFamily: "Inter_500Medium",
+                      fontSize: normalize(14),
+                    },
                   ]}
                 >
                   {t("bio")}
@@ -577,7 +671,11 @@ export default function OwnerProfileScreen() {
                   <TextInput
                     style={[
                       styles.textArea,
-                      { color: colors.text, fontFamily: "Inter_400Regular", fontSize: normalize(14) },
+                      {
+                        color: colors.text,
+                        fontFamily: "Inter_400Regular",
+                        fontSize: normalize(14),
+                      },
                     ]}
                     value={form.bio}
                     onChangeText={(v) => setForm((f) => ({ ...f, bio: v }))}
@@ -593,7 +691,11 @@ export default function OwnerProfileScreen() {
                 <Text
                   style={[
                     styles.label,
-                    { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
+                    {
+                      color: colors.text,
+                      fontFamily: "Inter_500Medium",
+                      fontSize: normalize(14),
+                    },
                   ]}
                 >
                   {"Business Address"}
@@ -615,7 +717,11 @@ export default function OwnerProfileScreen() {
                   <TextInput
                     style={[
                       styles.input,
-                      { color: colors.text, fontFamily: "Inter_400Regular", fontSize: normalize(14) },
+                      {
+                        color: colors.text,
+                        fontFamily: "Inter_400Regular",
+                        fontSize: normalize(14),
+                      },
                     ]}
                     value={form.address}
                     onChangeText={(v) => setForm((f) => ({ ...f, address: v }))}
@@ -630,7 +736,11 @@ export default function OwnerProfileScreen() {
                   <Text
                     style={[
                       styles.label,
-                      { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
+                      {
+                        color: colors.text,
+                        fontFamily: "Inter_500Medium",
+                        fontSize: normalize(14),
+                      },
                     ]}
                   >
                     {"CNIC Front"}
@@ -665,7 +775,10 @@ export default function OwnerProfileScreen() {
                         <Text
                           style={[
                             styles.uploadPlaceholderText,
-                            { color: colors.mutedForeground, fontSize: normalize(12) },
+                            {
+                              color: colors.mutedForeground,
+                              fontSize: normalize(12),
+                            },
                           ]}
                         >
                           {"Upload Front"}
@@ -684,7 +797,11 @@ export default function OwnerProfileScreen() {
                   <Text
                     style={[
                       styles.label,
-                      { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
+                      {
+                        color: colors.text,
+                        fontFamily: "Inter_500Medium",
+                        fontSize: normalize(14),
+                      },
                     ]}
                   >
                     {"CNIC Back"}
@@ -719,7 +836,10 @@ export default function OwnerProfileScreen() {
                         <Text
                           style={[
                             styles.uploadPlaceholderText,
-                            { color: colors.mutedForeground, fontSize: normalize(12) },
+                            {
+                              color: colors.mutedForeground,
+                              fontSize: normalize(12),
+                            },
                           ]}
                         >
                           {"Upload Back"}
@@ -740,7 +860,11 @@ export default function OwnerProfileScreen() {
                   <Text
                     style={[
                       styles.label,
-                      { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
+                      {
+                        color: colors.text,
+                        fontFamily: "Inter_500Medium",
+                        fontSize: normalize(14),
+                      },
                     ]}
                   >
                     {"Opening Time"}
@@ -762,7 +886,11 @@ export default function OwnerProfileScreen() {
                     <TextInput
                       style={[
                         styles.input,
-                        { color: colors.text, fontFamily: "Inter_400Regular", fontSize: normalize(14) },
+                        {
+                          color: colors.text,
+                          fontFamily: "Inter_400Regular",
+                          fontSize: normalize(14),
+                        },
                       ]}
                       value={form.opening_time}
                       onChangeText={(v) =>
@@ -778,7 +906,11 @@ export default function OwnerProfileScreen() {
                   <Text
                     style={[
                       styles.label,
-                      { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
+                      {
+                        color: colors.text,
+                        fontFamily: "Inter_500Medium",
+                        fontSize: normalize(14),
+                      },
                     ]}
                   >
                     {"Closing Time"}
@@ -800,7 +932,11 @@ export default function OwnerProfileScreen() {
                     <TextInput
                       style={[
                         styles.input,
-                        { color: colors.text, fontFamily: "Inter_400Regular", fontSize: normalize(14) },
+                        {
+                          color: colors.text,
+                          fontFamily: "Inter_400Regular",
+                          fontSize: normalize(14),
+                        },
                       ]}
                       value={form.closing_time}
                       onChangeText={(v) =>
@@ -850,7 +986,11 @@ export default function OwnerProfileScreen() {
           <Text
             style={[
               styles.cardTitle,
-              { color: colors.text, fontFamily: "Inter_700Bold", fontSize: normalize(18) },
+              {
+                color: colors.text,
+                fontFamily: "Inter_700Bold",
+                fontSize: normalize(18),
+              },
             ]}
           >
             {t("settings")}
@@ -860,7 +1000,11 @@ export default function OwnerProfileScreen() {
             <Text
               style={[
                 styles.label,
-                { color: colors.text, fontFamily: "Inter_500Medium", fontSize: normalize(14) },
+                {
+                  color: colors.text,
+                  fontFamily: "Inter_500Medium",
+                  fontSize: normalize(14),
+                },
               ]}
             >
               {t("language")}
@@ -882,7 +1026,7 @@ export default function OwnerProfileScreen() {
                     {
                       color: language === "en" ? "#fff" : colors.text,
                       fontFamily: "Inter_600SemiBold",
-                      fontSize: normalize(14)
+                      fontSize: normalize(14),
                     },
                   ]}
                 >
@@ -905,7 +1049,7 @@ export default function OwnerProfileScreen() {
                     {
                       color: language === "ur" ? "#fff" : colors.text,
                       fontFamily: "Inter_600SemiBold",
-                      fontSize: normalize(14)
+                      fontSize: normalize(14),
                     },
                   ]}
                 >
@@ -918,7 +1062,7 @@ export default function OwnerProfileScreen() {
 
         <Pressable
           style={[
-            styles.logoutBtn,
+            styles.signOutBtn,
             { backgroundColor: colors.destructive + "14" },
           ]}
           onPress={() => {
@@ -931,8 +1075,12 @@ export default function OwnerProfileScreen() {
           <Feather name="log-out" size={rs(18)} color={colors.destructive} />
           <Text
             style={[
-              styles.logoutText,
-              { color: colors.destructive, fontFamily: "Inter_600SemiBold", fontSize: normalize(14) },
+              styles.signOutText,
+              {
+                color: colors.destructive,
+                fontFamily: "Inter_600SemiBold",
+                fontSize: normalize(14),
+              },
             ]}
           >
             {t("signOut")}
@@ -942,3 +1090,108 @@ export default function OwnerProfileScreen() {
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { paddingHorizontal: rs(20), gap: rs(20) },
+  center: { flex: 1, alignItems: "center", justifyContent: "center" },
+  title: { fontSize: normalize(26) },
+  ownerCard: { flexDirection: "row", alignItems: "center", gap: rs(14) },
+  avatar: {
+    width: rs(60),
+    height: rs(60),
+    borderRadius: rs(30),
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  initials: { color: "#fff", fontSize: normalize(22) },
+  ownerName: { fontSize: normalize(18) },
+  ownerEmail: { fontSize: normalize(13), marginTop: rs(2) },
+  roleBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: rs(10),
+    paddingVertical: rs(4),
+    borderRadius: rs(20),
+    marginTop: rs(4),
+  },
+  roleText: { fontSize: normalize(12) },
+  card: { borderRadius: rs(16), borderWidth: 1, padding: rs(18), gap: rs(16) },
+  cardTitle: { fontSize: normalize(17) },
+  field: { gap: rs(8) },
+  label: { fontSize: normalize(14) },
+  inputWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: rs(10),
+    paddingHorizontal: rs(12),
+    paddingVertical: rs(12),
+    gap: rs(10),
+  },
+  input: { flex: 1, fontSize: normalize(15) },
+  catRow: { gap: rs(8) },
+  catChip: {
+    paddingHorizontal: rs(14),
+    paddingVertical: rs(8),
+    borderRadius: rs(20),
+    borderWidth: 1,
+  },
+  catText: { fontSize: normalize(14) },
+  textAreaWrap: { borderWidth: 1, borderRadius: rs(10), padding: rs(12) },
+  textArea: {
+    fontSize: normalize(15),
+    minHeight: rs(80),
+    textAlignVertical: "top",
+  },
+  saveBtn: {
+    paddingVertical: rs(15),
+    borderRadius: rs(12),
+    alignItems: "center",
+    marginTop: rs(4),
+  },
+  saveBtnText: { color: "#fff", fontSize: normalize(16) },
+  langRow: { flexDirection: "row", gap: rs(10) },
+  langBtn: {
+    flex: 1,
+    paddingVertical: rs(10),
+    alignItems: "center",
+    borderRadius: rs(10),
+    // borderWidth: 1,
+  },
+  langText: { fontSize: normalize(15) },
+  signOutBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: rs(10),
+    paddingVertical: rs(15),
+    borderRadius: rs(14),
+    // borderWidth: 1,
+  },
+  signOutText: { fontSize: normalize(16) },
+  imageUpload: {
+    height: rs(120),
+    borderRadius: rs(12),
+    borderWidth: 1,
+    borderStyle: "dashed",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  uploadPlaceholder: { alignItems: "center", gap: rs(8) },
+  uploadPlaceholderText: { fontSize: normalize(13) },
+  uploadPreview: { width: "100%", height: "100%" },
+  uploadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  detailBox: {
+    padding: rs(12),
+    borderRadius: rs(10),
+    backgroundColor: "rgba(0,0,0,0.02)",
+    gap: rs(4),
+  },
+  detailLabel: { fontSize: normalize(12), opacity: 0.6, marginTop: rs(8) },
+  detailText: { fontSize: normalize(15) },
+});
