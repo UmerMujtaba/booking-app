@@ -11,8 +11,7 @@
     "android-build": "eas build -p android --profile preview --clear-cache",
     "ios-build": "eas build -p ios --profile preview --clear-cache",
     "android": "expo run:android",
-    "ios": "expo run:ios",
-    "eas-build-post-install": "node scripts/fix-supabase-import.js"
+    "ios": "expo run:ios"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -62,7 +61,7 @@
     "zod-validation-error": "^3.4.0"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.8",
+    "@supabase/supabase-js": "^2.105.4",
     "expo": "~54.0.34",
     "expo-device": "~8.0.10",
     "expo-file-system": "^55.0.19",
