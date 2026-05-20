@@ -11,7 +11,8 @@
     "android-build": "eas build -p android --profile preview --clear-cache",
     "ios-build": "eas build -p ios --profile preview --clear-cache",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "eas-build-post-install": "node scripts/fix-supabase-import.js"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -43,6 +44,8 @@
     "expo-symbols": "~1.0.8",
     "expo-system-ui": "~6.0.9",
     "expo-web-browser": "~15.0.10",
+    "patch-package": "^8.0.1",
+    "postinstall-postinstall": "^2.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",

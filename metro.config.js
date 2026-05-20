@@ -1,3 +1,8 @@
-const { getDefaultConfig } = require("expo/metro-config");
+const { getDefaultConfig } = require('expo/metro-config')
 
-module.exports = getDefaultConfig(__dirname);
+const config = getDefaultConfig(__dirname)
+
+// prevents OTEL dynamic import crash path
+config.resolver.unstable_enablePackageExports = false
+
+module.exports = config
