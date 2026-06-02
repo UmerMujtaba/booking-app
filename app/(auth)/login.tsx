@@ -33,6 +33,8 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSignIn = async () => {
+
+    // console.log('Supabase URL:', supabase?.schema);
     if (!email || !password) {
       Alert.alert("Error", "Please fill in all fields");
       return;

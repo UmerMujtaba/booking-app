@@ -78,7 +78,7 @@ export function ServiceCard({
             { color: colors.primary, fontFamily: "Inter_700Bold" },
           ]}
         >
-          ${Number(service.price).toFixed(0)}
+          Rs {Number(service.price).toFixed(0)}
         </Text>
         {showActions && (
           <View style={styles.actions}>

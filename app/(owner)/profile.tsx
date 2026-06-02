@@ -27,7 +27,7 @@ import { supabase } from "@/lib/supabase";
 import { uploadToSupabase } from "@/lib/supabase-storage";
 
 import { Image } from "expo-image";
-import { rs, normalize } from "@/lib/responsive";
+import { rs, normalize, isIos } from "@/lib/responsive";
 
 const CATEGORIES = ["Barber", "Salon", "Spa", "Nails", "Massage", "Skincare"];
 
@@ -1152,12 +1152,12 @@ const styles = StyleSheet.create({
   langRow: { flexDirection: "row", gap: rs(10) },
   langBtn: {
     flex: 1,
-    paddingVertical: rs(10),
-    alignItems: "center",
+    paddingVertical: isIos() ? rs(2) : rs(10),
+    justifyContent: "center",
     borderRadius: rs(10),
     // borderWidth: 1,
   },
-  langText: { fontSize: normalize(15) },
+  langText: { fontSize: normalize(15), textAlign: 'center' },
   signOutBtn: {
     flexDirection: "row",
     alignItems: "center",

@@ -63,6 +63,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
     "expo": "~54.0.34",
+    "expo-dev-client": "~6.0.21",
     "expo-device": "~8.0.10",
     "expo-file-system": "^55.0.19",
     "expo-notifications": "~0.32.17",

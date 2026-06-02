@@ -6,6 +6,7 @@ import { rs, normalize } from '@/lib/responsive';
 import { Appointment, AppointmentStatus } from '@/features/booking/types';
 import { useColors } from '@/hooks/useColors';
 import { useTranslation } from '@/hooks/useTranslation';
+import { dateOptions, timeOptions } from '@/constants';
 
 interface Props {
   appointment: Appointment;
@@ -15,23 +16,28 @@ interface Props {
   onComplete?: () => void;
 }
 
-function StatusBadge({ status }: { status: AppointmentStatus }) {
+function StatusBadge({ status, computedStatus }: { status: AppointmentStatus; computedStatus?: 'missed' | 'due' | null }) {
   const colors = useColors();
   const { t } = useTranslation();
 
-  const config: Record<AppointmentStatus, { bg: string; text: string; icon: string }> = {
+  const config: Record<string, { bg: string; text: string; icon: string }> = {
     pending: { bg: colors.warning + '20', text: colors.warning, icon: 'clock' },
     confirmed: { bg: colors.primary + '18', text: colors.primary, icon: 'check-circle' },
     completed: { bg: colors.success + '18', text: colors.success, icon: 'check-square' },
     cancelled: { bg: colors.destructive + '18', text: colors.destructive, icon: 'x-circle' },
+    missed: { bg: colors.destructive + '20', text: colors.destructive, icon: 'alert-circle' },
+    due: { bg: colors.warning + '20', text: colors.warning, icon: 'alert-circle' },
   };
 
-  const c = config[status];
+  const key = computedStatus || status;
+  const c = config[key] || config.pending;
+  const label = computedStatus ? (computedStatus === 'missed' ? 'Missed' : 'Due') : t(status);
+
   return (
     <View style={[styles.badge, { backgroundColor: c.bg }]}>
       <Feather name={c.icon as keyof typeof Feather.glyphMap} size={rs(11)} color={c.text} />
-      <Text style={[styles.badgeText, { color: c.text, fontFamily: 'Inter_500Medium' }]}>
-        {t(status)}
+      <Text style={[styles.badgeText, { color: c.text, fontFamily: 'Inter_500Medium', textTransform: 'capitalize' }]}>
+        {label}
       </Text>
     </View>
   );
@@ -40,20 +46,49 @@ function StatusBadge({ status }: { status: AppointmentStatus }) {
 export function AppointmentCard({ appointment, showCustomer, onCancel, onConfirm, onComplete }: Props) {
   const colors = useColors();
   const { t } = useTranslation();
-
   const startTime = new Date(appointment.start_time);
-  const timeStr = startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const dateStr = startTime.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+  const timeStr = startTime.toLocaleTimeString('en-PK', timeOptions);
+  const dateStr = startTime.toLocaleDateString('en-PK', dateOptions);
+
+  const now = new Date();
+  const durationMins = appointment.service?.duration_minutes ?? 30;
+  const endTime = new Date(startTime.getTime() + durationMins * 60000);
+
+  let computedStatus: 'missed' | 'due' | null = null;
+  if (appointment.status === 'pending' || appointment.status === 'confirmed') {
+    if (now > endTime) {
+      computedStatus = 'missed';
+    } else if (now >= startTime) {
+      computedStatus = 'due';
+    }
+  }
+
+  const isMissed = computedStatus === 'missed';
+  const isDue = computedStatus === 'due';
+
+  let cardBgColor = colors.card;
+  let cardBorderColor = colors.border;
+  let timeColor = colors.primary;
+
+  if (isMissed) {
+    cardBgColor = colors.destructive + '0A';
+    cardBorderColor = colors.destructive + '40';
+    timeColor = colors.destructive;
+  } else if (isDue) {
+    cardBgColor = colors.warning + '10';
+    cardBorderColor = colors.warning + '50';
+    timeColor = colors.warning;
+  }
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+    <View style={[styles.card, { backgroundColor: cardBgColor, borderColor: cardBorderColor }]}>
       <View style={styles.timeBar}>
-        <View style={[styles.timeDot, { backgroundColor: colors.primary }]} />
+        <View style={[styles.timeDot, { backgroundColor: timeColor }]} />
         <View style={styles.timeLabels}>
-          <Text style={[styles.time, { color: colors.primary, fontFamily: 'Inter_700Bold' }]}>{timeStr}</Text>
+          <Text style={[styles.time, { color: timeColor, fontFamily: 'Inter_700Bold' }]}>{timeStr}</Text>
           <Text style={[styles.date, { color: colors.mutedForeground, fontFamily: 'Inter_400Regular' }]}>{dateStr}</Text>
         </View>
-        <StatusBadge status={appointment.status} />
+        <StatusBadge status={appointment.status} computedStatus={computedStatus} />
       </View>
 
       <View style={styles.body}>
@@ -120,15 +155,11 @@ export function AppointmentCard({ appointment, showCustomer, onCancel, onConfirm
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: rs(14),
+    borderRadius: rs(10),
     borderWidth: 1,
     marginBottom: rs(12),
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: rs(4),
-    elevation: 2,
+
   },
   timeBar: {
     flexDirection: 'row',

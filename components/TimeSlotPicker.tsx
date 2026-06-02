@@ -19,17 +19,50 @@ interface Props {
   existingAppointments: Appointment[];
   selectedSlot: Date | null;
   onSelectSlot: (slot: Date) => void;
+  openingTime?: string;
+  closingTime?: string;
 }
 
-function generateSlots(date: Date, durationMins: number): Date[] {
+function generateSlots(
+  date: Date,
+  durationMins: number,
+  openingTimeStr?: string,
+  closingTimeStr?: string
+): Date[] {
   const slots: Date[] = [];
   const start = new Date(date);
-  start.setHours(9, 0, 0, 0);
   const end = new Date(date);
-  end.setHours(18, 0, 0, 0);
+
+  let openHour = 9,
+    openMin = 0;
+  if (openingTimeStr) {
+    const parts = openingTimeStr.split(":");
+    if (parts.length >= 2) {
+      openHour = parseInt(parts[0], 10);
+      openMin = parseInt(parts[1], 10);
+    }
+  }
+
+  let closeHour = 18,
+    closeMin = 0;
+  if (closingTimeStr) {
+    const parts = closingTimeStr.split(":");
+    if (parts.length >= 2) {
+      closeHour = parseInt(parts[0], 10);
+      closeMin = parseInt(parts[1], 10);
+    }
+  }
+
+  start.setHours(openHour, openMin, 0, 0);
+  end.setHours(closeHour, closeMin, 0, 0);
 
   const current = new Date(start);
   while (current < end) {
+    // Ensure the entire slot fits before closing time
+    const slotEnd = new Date(current.getTime() + durationMins * 60000);
+    if (slotEnd > end) {
+      break;
+    }
     slots.push(new Date(current));
     current.setMinutes(current.getMinutes() + durationMins);
   }
@@ -63,12 +96,19 @@ export function TimeSlotPicker({
   existingAppointments,
   selectedSlot,
   onSelectSlot,
+  openingTime,
+  closingTime,
 }: Props) {
   const colors = useColors();
   const { t } = useTranslation();
 
   const slots: TimeSlot[] = useMemo(() => {
-    return generateSlots(selectedDate, durationMinutes).map((time) => ({
+    return generateSlots(
+      selectedDate,
+      durationMinutes,
+      openingTime,
+      closingTime
+    ).map((time) => ({
       time,
       label: time.toLocaleTimeString("en-US", {
         hour: "numeric",
@@ -77,8 +117,7 @@ export function TimeSlotPicker({
       }),
       status: getSlotStatus(time, durationMinutes, existingAppointments),
     }));
-  }, [selectedDate, durationMinutes, existingAppointments]);
-  console.log("🚀 ~ TimeSlotPicker ~ slots:", slots);
+  }, [selectedDate, durationMinutes, existingAppointments, openingTime, closingTime]);
 
   const availableSlots = slots.filter((s) => s.status !== "not_available");
 

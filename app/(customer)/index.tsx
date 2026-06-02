@@ -27,7 +27,7 @@ import { router } from "expo-router";
 const CATEGORIES = [
   "All",
   "Barber",
-  "Salon",
+  "Saloon",
   // "Spa",
   // "Nails",
   // "Massage",

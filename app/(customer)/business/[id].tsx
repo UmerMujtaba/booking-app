@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import { router, useLocalSearchParams, useFocusEffect } from "expo-router";
+import React, { useState, useCallback } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -47,9 +47,11 @@ export default function BusinessDetailScreen() {
   const insets = useSafeAreaInsets();
   const [selectedService, setSelectedService] = useState<Service | null>(null);
 
-  // useFocusEffect(() => {
-  //   setSelectedService(null);
-  // });
+  useFocusEffect(
+    useCallback(() => {
+      setSelectedService(null);
+    }, [])
+  );
 
   const { data: business, isLoading: bizLoading } = useQuery({
     queryKey: ["business", id],
@@ -230,7 +232,7 @@ export default function BusinessDetailScreen() {
                 { color: colors.primary, fontFamily: "Inter_700Bold" },
               ]}
             >
-              ${Number(selectedService.price).toFixed(0)} ·{" "}
+              Rs {Number(selectedService.price).toFixed(0)} ·{" "}
               {selectedService.duration_minutes} {t("duration")}
             </Text>
           </View>

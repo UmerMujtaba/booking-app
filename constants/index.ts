@@ -11,3 +11,17 @@ export const getGreeting = () => {
     return "Good\nNight";
   }
 };
+// Use 'as const' to tell TypeScript these are literal values, not just generic strings
+export const timeOptions = {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true,
+  timeZone: 'Asia/Karachi'
+} as const;
+
+export const dateOptions = {
+  weekday: 'short',
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'Asia/Karachi'
+} as const;

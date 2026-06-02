@@ -16,9 +16,10 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TimeSlotPicker } from "@/components/TimeSlotPicker";
-import { Appointment, Service } from "@/features/booking/types";
+import { Appointment, Service, Business } from "@/features/booking/types";
 import { useAuth } from "@/features/auth/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { scheduleAppointmentReminder } from "@/lib/notifications";
 import { useColors } from "@/hooks/useColors";
 import { useTranslation } from "@/hooks/useTranslation";
 import { rs, normalize } from "@/lib/responsive";
@@ -47,6 +48,16 @@ function getDateOptions(count = 14): Date[] {
     d.setDate(today.getDate() + i);
     return d;
   });
+}
+
+async function fetchBusiness(id: string): Promise<Business> {
+  const { data, error } = await supabase
+    .from("businesses")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error) throw error;
+  return data as Business;
 }
 
 async function fetchService(serviceId: string): Promise<Service> {
@@ -102,6 +113,12 @@ export default function BookingScreen() {
     enabled: !!serviceId,
   });
 
+  const { data: business } = useQuery({
+    queryKey: ["business", businessId],
+    queryFn: () => fetchBusiness(businessId!),
+    enabled: !!businessId,
+  });
+
   const { data: appointments = [], isLoading: apptLoading } = useQuery({
     queryKey: [
       "appointments-for-date",
@@ -134,15 +151,15 @@ export default function BookingScreen() {
         const slotStart = selectedSlot.getTime();
         const durationMins = service.duration_minutes ?? 30;
         const slotEnd = slotStart + durationMins * 60 * 1000;
-        
+
         for (const appt of existingAppts) {
-           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-           const apptDur = ((appt.service as any)?.duration_minutes ?? 30) * 60 * 1000;
-           const apptStart = new Date(appt.start_time).getTime();
-           const apptEnd = apptStart + apptDur;
-           if (slotStart < apptEnd && slotEnd > apptStart) {
-               throw new Error("This time slot has just been booked by someone else.");
-           }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const apptDur = ((appt.service as any)?.duration_minutes ?? 30) * 60 * 1000;
+          const apptStart = new Date(appt.start_time).getTime();
+          const apptEnd = apptStart + apptDur;
+          if (slotStart < apptEnd && slotEnd > apptStart) {
+            throw new Error("This time slot has just been booked by someone else.");
+          }
         }
       }
 
@@ -156,6 +173,13 @@ export default function BookingScreen() {
       if (error) throw error;
     },
     onSuccess: () => {
+      if (selectedSlot && service) {
+        scheduleAppointmentReminder(
+          "Upcoming Appointment",
+          `Your appointment for ${service.name} is starting now!`,
+          selectedSlot
+        );
+      }
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
       queryClient.invalidateQueries({ queryKey: ["appointments-for-date"] });
@@ -178,6 +202,12 @@ export default function BookingScreen() {
       queryClient.invalidateQueries({ queryKey: ["appointments-for-date"] });
     },
   });
+
+  const cancelBooking = () => {
+    setSelectedSlot(null);
+
+    setShowConfirm(false);
+  };
 
   if (svcLoading) {
     return (
@@ -246,7 +276,7 @@ export default function BookingScreen() {
                   },
                 ]}
               >
-                ${Number(service.price).toFixed(0)} · {service.duration_minutes}{" "}
+                Rs {Number(service.price).toFixed(0)} · {service.duration_minutes}{" "}
                 {t("duration")}
               </Text>
             </View>
@@ -352,6 +382,8 @@ export default function BookingScreen() {
               existingAppointments={appointments}
               selectedSlot={selectedSlot}
               onSelectSlot={setSelectedSlot}
+              openingTime={business?.opening_time}
+              closingTime={business?.closing_time}
             />
           )}
         </View>
@@ -406,7 +438,7 @@ export default function BookingScreen() {
         >
           <Pressable
             style={[styles.modalSheet, { backgroundColor: colors.card }]}
-            onPress={() => {}}
+            onPress={() => { }}
           >
             <View
               style={[styles.modalHandle, { backgroundColor: colors.border }]}
@@ -455,7 +487,7 @@ export default function BookingScreen() {
                 <Row
                   icon="tag"
                   label="Price"
-                  value={`$${Number(service.price).toFixed(2)}`}
+                  value={`Rs ${Number(service.price).toFixed(2)}`}
                   colors={colors}
                 />
               </View>
@@ -463,7 +495,7 @@ export default function BookingScreen() {
             <View style={styles.modalBtns}>
               <Pressable
                 style={[styles.modalCancelBtn, { borderColor: colors.border }]}
-                onPress={() => setShowConfirm(false)}
+                onPress={() => cancelBooking()}
               >
                 <Text
                   style={[

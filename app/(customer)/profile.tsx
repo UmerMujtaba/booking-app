@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { rs, normalize } from "@/lib/responsive";
+import { rs, normalize, isIos } from "@/lib/responsive";
 import { supabase } from "@/lib/supabase";
 
 import { useAuth } from "@/features/auth/AuthContext";
@@ -424,12 +424,13 @@ const styles = StyleSheet.create({
   langRow: { flexDirection: "row", gap: rs(10) },
   langBtn: {
     flex: 1,
-    paddingVertical: rs(10),
-    alignItems: "center",
+    paddingVertical: isIos() ? rs(2) : rs(10),
+    // alignItems: "center",
+    justifyContent: "center",
     borderRadius: rs(10),
-    borderWidth: 1,
+    // borderWidth: 1,
   },
-  langText: { fontSize: normalize(15) },
+  langText: { fontSize: rs(15), textAlign: 'center' },
   signOutBtn: {
     flexDirection: "row",
     alignItems: "center",

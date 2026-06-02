@@ -13,7 +13,7 @@ interface Props {
 
 const CATEGORY_ICONS: Record<string, string> = {
   Barber: "scissors",
-  Salon: "star",
+  Saloon: "scissors",
   Spa: "heart",
   Nails: "feather",
   Massage: "activity",
